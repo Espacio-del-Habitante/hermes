@@ -148,80 +148,80 @@ export function MusicPlayer() {
         }`}
       >
         <div className="bg-[#0a0a0a]/95 backdrop-blur-sm border-t border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
-            <div className="flex items-center justify-between gap-4">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 sm:py-3 md:py-4">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
               {/* Left: Track info */}
               <button 
                 onClick={() => setIsExpanded(true)}
-                className="flex items-center gap-3 group flex-1 min-w-0"
+                className="flex items-center gap-2 sm:gap-3 group flex-1 min-w-0 touch-manipulation"
               >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center flex-shrink-0 group-hover:bg-[#F25835] transition-colors">
-                  <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-white/50 group-hover:text-white" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-[#1a1a1a] flex items-center justify-center flex-shrink-0 group-active:bg-[#F25835] md:group-hover:bg-[#F25835] transition-colors">
+                  <Headphones className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white/50 group-active:text-white md:group-hover:text-white" />
                 </div>
                 <div className="min-w-0 text-left">
-                  <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.1em] text-white/40 uppercase">
+                  <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.1em] text-white/40 uppercase">
                     Playing
                   </p>
-                  <p className="font-mono text-[10px] sm:text-xs tracking-[0.1em] text-[#9AD9B0] uppercase truncate">
+                  <p className="font-mono text-[9px] sm:text-[10px] md:text-xs tracking-[0.1em] text-[#9AD9B0] uppercase truncate">
                     {`"${currentTrack.title}"`}
                   </p>
                 </div>
               </button>
 
-              {/* Center: Controls (hidden on small mobile) */}
-              <div className="hidden xs:flex items-center gap-2 sm:gap-3">
+              {/* Center: Controls (hidden on very small mobile) */}
+              <div className="hidden min-[360px]:flex items-center gap-1.5 sm:gap-2 md:gap-3">
                 <button 
                   onClick={handlePrevTrack}
-                  className="p-2 text-white/40 hover:text-white transition-colors"
+                  className="p-1.5 sm:p-2 text-white/40 active:text-white md:hover:text-white transition-colors touch-manipulation"
                   aria-label="Previous track"
                 >
-                  <SkipBack className="w-4 h-4" />
+                  <SkipBack className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
                 <button 
                   onClick={handlePlayPause}
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white flex items-center justify-center hover:bg-[#F25835] transition-colors group"
+                  className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full bg-white flex items-center justify-center active:bg-[#F25835] md:hover:bg-[#F25835] transition-colors group touch-manipulation"
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? (
-                    <Pause className="w-3 h-3 sm:w-4 sm:h-4 text-[#0a0a0a] group-hover:text-white" />
+                    <Pause className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-[#0a0a0a] group-active:text-white md:group-hover:text-white" />
                   ) : (
-                    <Play className="w-3 h-3 sm:w-4 sm:h-4 text-[#0a0a0a] group-hover:text-white ml-0.5" />
+                    <Play className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-[#0a0a0a] group-active:text-white md:group-hover:text-white ml-0.5" />
                   )}
                 </button>
                 <button 
                   onClick={handleNextTrack}
-                  className="p-2 text-white/40 hover:text-white transition-colors"
+                  className="p-1.5 sm:p-2 text-white/40 active:text-white md:hover:text-white transition-colors touch-manipulation"
                   aria-label="Next track"
                 >
-                  <SkipForward className="w-4 h-4" />
+                  <SkipForward className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
 
               {/* Right: Volume and expand */}
-              <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1.5 sm:gap-2 md:gap-4">
                 <button 
                   onClick={toggleMute}
-                  className="hidden sm:flex p-2 text-white/40 hover:text-white transition-colors"
+                  className="hidden sm:flex p-1.5 sm:p-2 text-white/40 active:text-white md:hover:text-white transition-colors touch-manipulation"
                   aria-label={isMuted ? "Unmute" : "Mute"}
                 >
                   {isMuted ? (
-                    <VolumeX className="w-4 h-4" />
+                    <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   ) : (
-                    <Volume2 className="w-4 h-4" />
+                    <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   )}
                 </button>
                 <a
                   href={youtubeChannelUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hidden sm:flex p-2 text-white/40 hover:text-[#F25835] transition-colors"
+                  className="hidden sm:flex p-1.5 sm:p-2 text-white/40 active:text-[#F25835] md:hover:text-[#F25835] transition-colors touch-manipulation"
                   aria-label="Open YouTube channel"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </a>
                 <button
                   onClick={() => setIsExpanded(true)}
-                  className="font-mono text-[9px] sm:text-[10px] tracking-[0.15em] text-white/40 hover:text-white uppercase transition-colors"
+                  className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 active:text-white md:hover:text-white uppercase transition-colors touch-manipulation"
                 >
                   Expandir
                 </button>

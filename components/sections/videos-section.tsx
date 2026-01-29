@@ -33,8 +33,8 @@ const videos = [
 
 export function VideosSection({ isActive }: VideosSectionProps) {
   return (
-    <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a]">
-      <div className="h-full flex flex-col p-8 md:p-12 lg:p-16">
+    <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
+      <div className="h-full flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
         {/* Header */}
         <div 
           className={`mb-8 transition-all duration-700 delay-100 ${

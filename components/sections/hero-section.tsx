@@ -23,24 +23,24 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
       </div>
 
       {/* Content container */}
-      <div className="relative h-full flex">
+      <div className="relative h-full flex overflow-hidden">
         {/* Left content area */}
-        <div className="flex-1 flex flex-col justify-between p-6 sm:p-8 md:p-12 lg:p-16 z-10">
+        <div className="flex-1 flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 z-10 min-h-0">
           {/* Curator label */}
           <div 
-            className={`transition-all duration-700 delay-100 ${
+            className={`flex-shrink-0 transition-all duration-700 delay-100 ${
               isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] text-[#F25835] uppercase mb-4 sm:mb-6">
+            <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] text-[#F25835] uppercase mb-3 sm:mb-4 md:mb-6">
               Curaduria Actual
             </p>
           </div>
 
           {/* Main title */}
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex-1 flex flex-col justify-center min-h-0 py-4 sm:py-6 md:py-8">
             <h1 
-              className={`font-serif text-[15vw] sm:text-[12vw] md:text-[10vw] lg:text-[8vw] leading-[0.85] text-white italic transition-all duration-700 delay-200 ${
+              className={`font-serif text-[18vw] sm:text-[14vw] md:text-[12vw] lg:text-[10vw] xl:text-[8vw] leading-[0.85] text-white italic transition-all duration-700 delay-200 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
               }`}
             >
@@ -51,40 +51,40 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
 
           {/* Bottom content categories - CLICKABLE */}
           <div 
-            className={`flex flex-wrap gap-4 sm:gap-6 md:gap-8 lg:gap-12 transition-all duration-700 delay-300 ${
+            className={`flex-shrink-0 flex flex-wrap gap-3 sm:gap-4 md:gap-6 lg:gap-8 xl:gap-12 transition-all duration-700 delay-300 ${
               isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
             <button 
               onClick={() => onNavigateToSub("videos")}
-              className="group text-left"
+              className="group text-left touch-manipulation"
             >
-              <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white mb-1 transition-colors group-hover:text-[#F25835]">
+              <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white mb-0.5 sm:mb-1 transition-colors group-active:text-[#F25835] md:group-hover:text-[#F25835]">
                 Videos
               </h3>
-              <p className="font-mono text-[8px] sm:text-[10px] tracking-[0.15em] text-white/40 uppercase">
+              <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                 El Sonido del Futuro
               </p>
             </button>
             <button 
               onClick={() => onNavigateToSub("film")}
-              className="group text-left"
+              className="group text-left touch-manipulation"
             >
-              <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white/40 mb-1 italic transition-colors group-hover:text-white">
+              <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 italic transition-colors group-active:text-white md:group-hover:text-white">
                 Film
               </h3>
-              <p className="font-mono text-[8px] sm:text-[10px] tracking-[0.15em] text-white/40 uppercase">
+              <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                 Detras de Camara
               </p>
             </button>
             <button 
               onClick={() => onNavigateToSub("photos")}
-              className="group text-left"
+              className="group text-left touch-manipulation"
             >
-              <h3 className="font-serif text-xl sm:text-2xl md:text-3xl text-white/40 mb-1 italic transition-colors group-hover:text-white">
+              <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 italic transition-colors group-active:text-white md:group-hover:text-white">
                 Photos
               </h3>
-              <p className="font-mono text-[8px] sm:text-[10px] tracking-[0.15em] text-white/40 uppercase">
+              <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                 Archivo Fotografico
               </p>
             </button>
@@ -92,7 +92,7 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
 
           {/* Description */}
           <div 
-            className={`mt-6 sm:mt-8 max-w-md transition-all duration-700 delay-400 ${
+            className={`flex-shrink-0 mt-4 sm:mt-6 md:mt-8 max-w-md transition-all duration-700 delay-400 ${
               isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
@@ -123,7 +123,7 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
       </div>
 
       {/* Mobile image - subtle in corner */}
-      <div className="lg:hidden absolute top-20 right-0 w-32 sm:w-40 h-32 sm:h-40 opacity-20 pointer-events-none">
+      <div className="lg:hidden absolute top-16 sm:top-20 right-0 w-24 sm:w-32 md:w-40 h-24 sm:h-32 md:h-40 opacity-10 sm:opacity-20 pointer-events-none">
         <Image
           src="/images/cuadro-removebg-preview.png"
           alt="Arte"

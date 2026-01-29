@@ -82,6 +82,129 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [navigateNext, navigatePrev, navigateUp, navigateDown])
 
+  // Mouse wheel navigation
+  useEffect(() => {
+    let wheelTimeout: NodeJS.Timeout | null = null
+    let lastWheelTime = 0
+    const wheelCooldown = 300 // ms between wheel navigations
+
+    const handleWheel = (e: WheelEvent) => {
+      // Prevent default scrolling
+      e.preventDefault()
+
+      // Throttle wheel events
+      const now = Date.now()
+      if (now - lastWheelTime < wheelCooldown) return
+      lastWheelTime = now
+
+      // Clear any pending timeout
+      if (wheelTimeout) {
+        clearTimeout(wheelTimeout)
+      }
+
+      // Determine scroll direction
+      const deltaX = Math.abs(e.deltaX)
+      const deltaY = Math.abs(e.deltaY)
+      const isHorizontalScroll = deltaX > deltaY
+
+      wheelTimeout = setTimeout(() => {
+        if (isHorizontalScroll) {
+          // Horizontal scroll -> navigate left/right
+          if (e.deltaX > 0) {
+            navigateNext()
+          } else if (e.deltaX < 0) {
+            navigatePrev()
+          }
+        } else {
+          // Vertical scroll -> navigate up/down (only in inicio section)
+          if (currentMain === "inicio") {
+            if (e.deltaY > 0) {
+              navigateDown()
+            } else if (e.deltaY < 0) {
+              navigateUp()
+            }
+          } else {
+            // When not in inicio, vertical scroll navigates horizontally
+            if (e.deltaY > 0) {
+              navigateNext()
+            } else if (e.deltaY < 0) {
+              navigatePrev()
+            }
+          }
+        }
+      }, 50) // Small delay to debounce rapid wheel events
+    }
+
+    window.addEventListener("wheel", handleWheel, { passive: false })
+    return () => {
+      window.removeEventListener("wheel", handleWheel)
+      if (wheelTimeout) clearTimeout(wheelTimeout)
+    }
+  }, [navigateNext, navigatePrev, navigateUp, navigateDown, currentMain])
+
+  // Touch swipe navigation
+  useEffect(() => {
+    let touchStartX = 0
+    let touchStartY = 0
+    let touchEndX = 0
+    let touchEndY = 0
+    const minSwipeDistance = 50 // Minimum distance for a swipe
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.changedTouches[0].screenX
+      touchStartY = e.changedTouches[0].screenY
+    }
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].screenX
+      touchEndY = e.changedTouches[0].screenY
+      handleSwipe()
+    }
+
+    const handleSwipe = () => {
+      const deltaX = touchEndX - touchStartX
+      const deltaY = touchEndY - touchStartY
+      const absDeltaX = Math.abs(deltaX)
+      const absDeltaY = Math.abs(deltaY)
+
+      // Determine if it's a horizontal or vertical swipe
+      const isHorizontalSwipe = absDeltaX > absDeltaY
+
+      if (isHorizontalSwipe && absDeltaX > minSwipeDistance) {
+        // Horizontal swipe -> navigate left/right
+        if (deltaX > 0) {
+          navigatePrev()
+        } else {
+          navigateNext()
+        }
+      } else if (!isHorizontalSwipe && absDeltaY > minSwipeDistance) {
+        // Vertical swipe -> navigate up/down (only in inicio section)
+        if (currentMain === "inicio") {
+          if (deltaY > 0) {
+            navigateDown()
+          } else {
+            navigateUp()
+          }
+        } else {
+          // When not in inicio, vertical swipe navigates horizontally
+          if (deltaY > 0) {
+            navigateNext()
+          } else {
+            navigatePrev()
+          }
+        }
+      }
+    }
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true })
+    window.addEventListener("touchend", handleTouchEnd, { passive: true })
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart)
+      window.removeEventListener("touchend", handleTouchEnd)
+    }
+  }, [navigateNext, navigatePrev, navigateUp, navigateDown, currentMain])
+
   return (
     <main className="h-screen w-screen overflow-hidden bg-[#0a0a0a] text-white">
       <GalleryHeader 
@@ -90,7 +213,13 @@ export default function Home() {
       />
       
       {/* Main content with horizontal transitions */}
-      <div className="relative w-full overflow-hidden" style={{ height: 'calc(100vh - 160px)', marginTop: '80px' }}>
+      <div 
+        className="relative w-full overflow-hidden" 
+        style={{ 
+          height: 'calc(100vh - 64px - 56px)', // 64px header + ~56px music player (py-2.5 + content)
+          marginTop: '64px' 
+        }}
+      >
         {/* Horizontal sections container */}
         <div 
           className="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)]"
@@ -136,12 +265,12 @@ export default function Home() {
       <MusicPlayer />
 
       {/* Section indicator */}
-      <div className="fixed bottom-8 left-8 z-50 flex items-center gap-4">
-        <p className="font-mono text-xs tracking-[0.2em] text-white/40 uppercase">
+      <div className="fixed bottom-20 sm:bottom-16 md:bottom-8 left-4 md:left-8 z-50 flex items-center gap-2 md:gap-4">
+        <p className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-white/40 uppercase">
           {String(currentMainIndex + 1).padStart(2, "0")} / {String(mainSections.length).padStart(2, "0")}
         </p>
         {currentMain === "inicio" && heroSub !== "main" && (
-          <span className="font-mono text-xs tracking-[0.2em] text-[#F25835] uppercase">
+          <span className="font-mono text-[10px] md:text-xs tracking-[0.2em] text-[#F25835] uppercase">
             {heroSub}
           </span>
         )}

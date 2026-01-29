@@ -35,8 +35,8 @@ export function ArtistasSection({ isActive }: ArtistasSectionProps) {
   const [hoveredArtist, setHoveredArtist] = useState<number | null>(null)
 
   return (
-    <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] pt-24">
-      <div className="h-full flex flex-col p-8 md:p-12">
+    <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
+      <div className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto">
         {/* Section header */}
         <div 
           className={`mb-8 transition-all duration-700 delay-100 ${

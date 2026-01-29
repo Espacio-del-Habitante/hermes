@@ -9,9 +9,9 @@ interface FilmSectionProps {
 
 export function FilmSection({ isActive }: FilmSectionProps) {
   return (
-    <section className="relative h-full w-full flex-shrink-0 flex">
+    <section className="relative h-full w-full flex-shrink-0 flex overflow-hidden">
       {/* Left - Title and info */}
-      <div className="flex-1 bg-[#0a0a0a] flex flex-col justify-between p-8 md:p-12 lg:p-16">
+      <div className="flex-1 bg-[#0a0a0a] flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
         <div 
           className={`transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"

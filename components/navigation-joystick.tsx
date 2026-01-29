@@ -59,10 +59,12 @@ export function NavigationJoystick({
           const { x, y } = JSON.parse(savedPosition)
           // Use saved collapsed state to determine width
           const savedIsCollapsed = savedCollapsed === 'true'
-          const width = savedIsCollapsed ? 48 : 128
-          const padding = 16
+          const isMobile = window.innerWidth < 768
+          const width = savedIsCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+          const padding = isMobile ? 8 : 16
+          const musicPlayerHeight = 80
           const maxX = Math.max(padding, window.innerWidth - width - padding)
-          const maxY = Math.max(padding, window.innerHeight - width - padding - 80)
+          const maxY = Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
           
           // Adjust position to maintain corner when size changes
           let adjustedX = Math.max(padding, Math.min(x, maxX))
@@ -72,8 +74,8 @@ export function NavigationJoystick({
           const corners = [
             { x: padding, y: padding },
             { x: Math.max(padding, window.innerWidth - width - padding), y: padding },
-            { x: padding, y: Math.max(padding, window.innerHeight - width - padding - 80) },
-            { x: Math.max(padding, window.innerWidth - width - padding), y: Math.max(padding, window.innerHeight - width - padding - 80) },
+            { x: padding, y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight) },
+            { x: Math.max(padding, window.innerWidth - width - padding), y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight) },
           ]
           
           let nearestCorner = corners[0]
@@ -96,20 +98,24 @@ export function NavigationJoystick({
           setPosition({ x: adjustedX, y: adjustedY })
         } catch {
           // If parsing fails, use default
-          const width = 128 // expanded by default
-          const padding = 16
+          const isMobile = window.innerWidth < 768
+          const width = isMobile ? 96 : 128 // expanded by default
+          const padding = isMobile ? 8 : 16
+          const musicPlayerHeight = 80
           setPosition({ 
             x: Math.max(padding, window.innerWidth - width - padding), 
-            y: Math.max(padding, window.innerHeight - width - padding - 80)
+            y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
           })
         }
       } else {
         // Default position: bottom right, expanded
-        const width = 128
-        const padding = 16
+        const isMobile = window.innerWidth < 768
+        const width = isMobile ? 96 : 128
+        const padding = isMobile ? 8 : 16
+        const musicPlayerHeight = 80
         setPosition({ 
           x: Math.max(padding, window.innerWidth - width - padding), 
-          y: Math.max(padding, window.innerHeight - width - padding - 80)
+          y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
         })
       }
       
@@ -225,9 +231,10 @@ export function NavigationJoystick({
   const snapToCorner = useCallback((x: number, y: number) => {
     if (typeof window === 'undefined') return { x, y }
     
-    const width = isCollapsed ? 48 : 128
-    const height = isCollapsed ? 48 : 128
-    const padding = 16
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    const padding = isMobile ? 8 : 16
     
     // Ensure position is within bounds
     const maxX = Math.max(padding, window.innerWidth - width - padding)
@@ -269,19 +276,22 @@ export function NavigationJoystick({
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging && joystickRef.current && typeof window !== 'undefined') {
-      const width = isCollapsed ? 48 : 128
-      const height = isCollapsed ? 48 : 128
+      const isMobile = window.innerWidth < 768
+      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       
       // Calculate new position based on center of joystick
       const newX = e.clientX - dragStart.x
       const newY = e.clientY - dragStart.y
       
       // Constrain to viewport bounds
-      const maxX = window.innerWidth - width
-      const maxY = window.innerHeight - height
+      const padding = isMobile ? 8 : 16
+      const musicPlayerHeight = 80
+      const maxX = window.innerWidth - width - padding
+      const maxY = window.innerHeight - height - padding - musicPlayerHeight
       
-      const constrainedX = Math.max(0, Math.min(newX, maxX))
-      const constrainedY = Math.max(0, Math.min(newY, maxY))
+      const constrainedX = Math.max(padding, Math.min(newX, maxX))
+      const constrainedY = Math.max(padding, Math.min(newY, maxY))
       
       setPosition({
         x: constrainedX,
@@ -304,17 +314,20 @@ export function NavigationJoystick({
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (isDragging && joystickRef.current && typeof window !== 'undefined') {
       const touch = e.touches[0]
-      const width = isCollapsed ? 48 : 128
-      const height = isCollapsed ? 48 : 128
+      const isMobile = window.innerWidth < 768
+      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       
       const newX = touch.clientX - dragStart.x
       const newY = touch.clientY - dragStart.y
       
-      const maxX = window.innerWidth - width
-      const maxY = window.innerHeight - height
+      const padding = isMobile ? 8 : 16
+      const musicPlayerHeight = 80
+      const maxX = window.innerWidth - width - padding
+      const maxY = window.innerHeight - height - padding - musicPlayerHeight
       
-      const constrainedX = Math.max(0, Math.min(newX, maxX))
-      const constrainedY = Math.max(0, Math.min(newY, maxY))
+      const constrainedX = Math.max(padding, Math.min(newX, maxX))
+      const constrainedY = Math.max(padding, Math.min(newY, maxY))
       
       setPosition({
         x: constrainedX,
@@ -382,8 +395,9 @@ export function NavigationJoystick({
     
     if (joystickRef.current) {
       const rect = joystickRef.current.getBoundingClientRect()
-      const width = isCollapsed ? 48 : 128
-      const height = isCollapsed ? 48 : 128
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       
       setIsDragging(true)
       setDragStart({
@@ -416,8 +430,9 @@ export function NavigationJoystick({
     const touch = e.touches[0]
     if (joystickRef.current) {
       const rect = joystickRef.current.getBoundingClientRect()
-      const width = isCollapsed ? 48 : 128
-      const height = isCollapsed ? 48 : 128
+      const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       
       setIsDragging(true)
       setDragStart({
@@ -445,16 +460,16 @@ export function NavigationJoystick({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <div className="relative w-12 h-12">
+        <div className="relative w-10 h-10 md:w-12 md:h-12">
           <button
             onClick={(e) => {
               e.stopPropagation()
               setIsCollapsed(false)
             }}
-            className="absolute inset-0 flex items-center justify-center text-white transition-all hover:text-white/80 rounded-full pointer-events-auto z-10"
+            className="absolute inset-0 flex items-center justify-center text-white transition-all active:text-white/80 md:hover:text-white/80 rounded-full pointer-events-auto z-10 touch-manipulation bg-white/10 backdrop-blur-sm border border-white/20"
             aria-label="Expand joystick"
           >
-            <ChevronUp className="h-5 w-5" />
+            <ChevronUp className="h-4 w-4 md:h-5 md:w-5" />
           </button>
           {/* Invisible drag area around button */}
           <div className="absolute inset-0 -m-2 cursor-move" />
@@ -477,13 +492,13 @@ export function NavigationJoystick({
       onTouchStart={handleTouchStart}
     >
       <div className="relative">
-        {/* Cross-shaped joystick (D-pad) */}
-        <div className="relative w-32 h-32">
+        {/* Cross-shaped joystick (D-pad) - responsive sizing */}
+        <div className="relative w-24 h-24 md:w-32 md:h-32">
           {/* Connecting cross background */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 border border-white/10 bg-white/5 backdrop-blur-sm" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 border-l border-r border-white/10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border border-white/10 bg-white/5 backdrop-blur-sm" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-l border-r border-white/10" />
           {showVertical && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 border-t border-b border-white/10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-t border-b border-white/10" />
           )}
 
           {/* Center button - collapse */}
@@ -492,10 +507,10 @@ export function NavigationJoystick({
               e.stopPropagation()
               setIsCollapsed(true)
             }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-8 w-8 items-center justify-center border border-white/20 bg-white/10 backdrop-blur-sm text-white transition-all hover:bg-white hover:text-[#0a0a0a] rounded-full"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center border border-white/20 bg-white/10 backdrop-blur-sm text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] rounded-full touch-manipulation"
             aria-label="Collapse joystick"
           >
-            <ChevronDown className="h-3 w-3" />
+            <ChevronDown className="h-2.5 w-2.5 md:h-3 md:w-3" />
           </button>
 
           {/* Up button */}
@@ -506,10 +521,10 @@ export function NavigationJoystick({
                 onNavigateUp()
               }}
               disabled={!canNavigateUp || isTransitioning}
-              className="absolute top-0 left-1/2 -translate-x-1/2 flex h-12 w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all hover:bg-white hover:text-[#0a0a0a] disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed"
+              className="absolute top-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
               aria-label="Navigate up"
             >
-              <ArrowUp className="h-5 w-5" />
+              <ArrowUp className="h-4 w-4 md:h-5 md:w-5" />
             </button>
           )}
 
@@ -521,10 +536,10 @@ export function NavigationJoystick({
                 onNavigateDown()
               }}
               disabled={!canNavigateDown || isTransitioning}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 flex h-12 w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all hover:bg-white hover:text-[#0a0a0a] disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
               aria-label="Navigate down"
             >
-              <ArrowDown className="h-5 w-5" />
+              <ArrowDown className="h-4 w-4 md:h-5 md:w-5" />
             </button>
           )}
 
@@ -535,10 +550,10 @@ export function NavigationJoystick({
               onNavigateLeft()
             }}
             disabled={!canNavigateLeft || isTransitioning}
-            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-12 w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all hover:bg-white hover:text-[#0a0a0a] disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-white disabled:cursor-not-allowed"
+            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
             aria-label="Navigate left"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
           </button>
 
           {/* Right button */}
@@ -548,10 +563,10 @@ export function NavigationJoystick({
               onNavigateRight()
             }}
             disabled={!canNavigateRight || isTransitioning}
-            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-12 w-12 items-center justify-center border border-white/20 bg-white text-[#0a0a0a] transition-all hover:bg-transparent hover:text-white hover:border-white disabled:opacity-20 disabled:hover:bg-white disabled:hover:text-[#0a0a0a] disabled:cursor-not-allowed"
+            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-white text-[#0a0a0a] transition-all active:bg-transparent active:text-white active:border-white md:hover:bg-transparent md:hover:text-white md:hover:border-white disabled:opacity-20 disabled:active:bg-white disabled:active:text-[#0a0a0a] touch-manipulation"
             aria-label="Navigate right"
           >
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
           </button>
         </div>
       </div>
