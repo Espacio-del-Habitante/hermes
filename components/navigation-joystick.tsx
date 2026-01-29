@@ -518,6 +518,10 @@ export function NavigationJoystick({
             <button
               onClick={(e) => {
                 e.stopPropagation()
+                // Start music on first interaction
+                if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
+                  (window as any).startMusicPlayer()
+                }
                 onNavigateUp()
               }}
               disabled={!canNavigateUp || isTransitioning}
@@ -533,6 +537,10 @@ export function NavigationJoystick({
             <button
               onClick={(e) => {
                 e.stopPropagation()
+                // Start music on first interaction
+                if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
+                  (window as any).startMusicPlayer()
+                }
                 onNavigateDown()
               }}
               disabled={!canNavigateDown || isTransitioning}
@@ -547,6 +555,10 @@ export function NavigationJoystick({
           <button
             onClick={(e) => {
               e.stopPropagation()
+              // Start music on first interaction
+              if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
+                (window as any).startMusicPlayer()
+              }
               onNavigateLeft()
             }}
             disabled={!canNavigateLeft || isTransitioning}
@@ -560,6 +572,10 @@ export function NavigationJoystick({
           <button
             onClick={(e) => {
               e.stopPropagation()
+              // Start music on first interaction
+              if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
+                (window as any).startMusicPlayer()
+              }
               onNavigateRight()
             }}
             disabled={!canNavigateRight || isTransitioning}
