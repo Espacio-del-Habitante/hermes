@@ -450,7 +450,7 @@ export function NavigationJoystick({
     return (
       <div
         ref={joystickRef}
-        className="fixed z-[90] cursor-move select-none pointer-events-auto touch-none"
+        className="fixed z-[85] cursor-move select-none pointer-events-auto touch-none"
         style={{
           left: `${position.x}px`,
           top: `${position.y}px`,
@@ -466,7 +466,7 @@ export function NavigationJoystick({
               e.stopPropagation()
               setIsCollapsed(false)
             }}
-            className="absolute inset-0 flex items-center justify-center text-white transition-all active:text-white/80 md:hover:text-white/80 rounded-full pointer-events-auto z-10 touch-manipulation bg-white/10 backdrop-blur-sm border border-white/20"
+            className="absolute inset-0 flex items-center justify-center text-white transition-all active:text-white/80 md:hover:text-white/80 rounded-full pointer-events-auto z-10 touch-manipulation bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg"
             aria-label="Expand joystick"
           >
             <ChevronUp className="h-4 w-4 md:h-5 md:w-5" />
@@ -481,7 +481,7 @@ export function NavigationJoystick({
   return (
     <div
       ref={joystickRef}
-      className="fixed z-[60] cursor-move select-none pointer-events-auto touch-none"
+      className="fixed z-[85] cursor-move select-none pointer-events-auto touch-none"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -495,7 +495,7 @@ export function NavigationJoystick({
         {/* Cross-shaped joystick (D-pad) - responsive sizing */}
         <div className="relative w-24 h-24 md:w-32 md:h-32">
           {/* Connecting cross background */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border border-white/10 bg-white/5 backdrop-blur-sm" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border border-white/10 bg-white/5 backdrop-blur-sm shadow-lg" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-l border-r border-white/10" />
           {showVertical && (
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-t border-b border-white/10" />
@@ -550,7 +550,7 @@ export function NavigationJoystick({
               onNavigateLeft()
             }}
             disabled={!canNavigateLeft || isTransitioning}
-            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
+            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation shadow-md"
             aria-label="Navigate left"
           >
             <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
@@ -563,7 +563,7 @@ export function NavigationJoystick({
               onNavigateRight()
             }}
             disabled={!canNavigateRight || isTransitioning}
-            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-white text-[#0a0a0a] transition-all active:bg-transparent active:text-white active:border-white md:hover:bg-transparent md:hover:text-white md:hover:border-white disabled:opacity-20 disabled:active:bg-white disabled:active:text-[#0a0a0a] touch-manipulation"
+            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-white text-[#0a0a0a] transition-all active:bg-transparent active:text-white active:border-white md:hover:bg-transparent md:hover:text-white md:hover:border-white disabled:opacity-20 disabled:active:bg-white disabled:active:text-[#0a0a0a] touch-manipulation shadow-lg"
             aria-label="Navigate right"
           >
             <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
