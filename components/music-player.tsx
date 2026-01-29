@@ -1,41 +1,121 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { Headphones, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ExternalLink } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Headphones, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ExternalLink, Music } from "lucide-react"
 
-// YouTube playlist tracks
-const playlist = [
-  { id: 1, title: "Alma de Calle", videoId: "_Voo_NMWqEo" },
-  { id: 2, title: "Probando la Sopa", videoId: "HjCLLrVN5B0" },
-  { id: 3, title: "Cubanitos", videoId: "yPFMlf4cN4I" },
-  { id: 4, title: "Noches Tropicales", videoId: "kB8kYYm7kI8" },
+// Multiple YouTube playlists from the channel
+const playlists = [
+  {
+    id: "PLUBCMmrhkcuNEAsn-nkW4Pm5-EgDpil65",
+    name: "Guateke - Alma de Calle",
+    artist: "Guateke",
+    tracks: [
+      { id: 1, title: "Alma de Calle", videoId: "_Voo_NMWqEo" },
+      { id: 2, title: "Probando la Sopa", videoId: "HjCLLrVN5B0" },
+      { id: 3, title: "Cubanitos", videoId: "yPFMlf4cN4I" },
+      { id: 4, title: "Noches Tropicales", videoId: "kB8kYYm7kI8" },
+    ]
+  },
+  {
+    id: "PLUBCMmrhkcuNPQvIr1gHhgZdllm8L2qUw",
+    name: "Playlist 2",
+    artist: "El Rancho de Kiro",
+    tracks: [
+      { id: 1, title: "Track 1", videoId: "N5b0wHb6YJo" },
+      // Add more tracks from this playlist here
+      // You can find video IDs from the YouTube playlist page
+    ]
+  },
+  {
+    id: "PLUBCMmrhkcuMsHYaByUXeGqKIneanZcrN",
+    name: "Playlist 3",
+    artist: "El Rancho de Kiro",
+    tracks: [
+      { id: 1, title: "Track 1", videoId: "sSsuw8EoLms" },
+      // Add more tracks from this playlist here
+    ]
+  },
+  {
+    id: "PLUBCMmrhkcuMBD00iDM0qScC3VV2PKCKe",
+    name: "Playlist 4",
+    artist: "El Rancho de Kiro",
+    tracks: [
+      { id: 1, title: "Track 1", videoId: "wDKX9A3Ekj8" },
+      // Add more tracks from this playlist here
+    ]
+  },
 ]
+
+// Function to get a random playlist
+const getRandomPlaylist = () => {
+  const randomIndex = Math.floor(Math.random() * playlists.length)
+  return playlists[randomIndex]
+}
 
 export function MusicPlayer() {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTrack, setCurrentTrack] = useState(playlist[0])
+  const [isPlaying, setIsPlaying] = useState(true) // Start playing automatically
+  const [currentPlaylist, setCurrentPlaylist] = useState(() => getRandomPlaylist())
+  const [currentTrack, setCurrentTrack] = useState(() => {
+    const playlist = getRandomPlaylist()
+    return playlist.tracks[0]
+  })
   const [isMuted, setIsMuted] = useState(false)
+  const [showPlaylistSelector, setShowPlaylistSelector] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+  const hiddenIframeRef = useRef<HTMLIFrameElement>(null)
 
-  const youtubePlaylistUrl = "https://www.youtube.com/watch?v=_Voo_NMWqEo&list=PLUBCMmrhkcuNEAsn-nkW4Pm5-EgDpil65"
   const youtubeChannelUrl = "https://www.youtube.com/@elranchodekiro"
+  const youtubePlaylistUrl = `https://www.youtube.com/watch?v=${currentTrack.videoId}&list=${currentPlaylist.id}`
+
+  // Auto-play on mount
+  useEffect(() => {
+    setIsPlaying(true)
+  }, [])
+
+  // Update hidden iframe when track or playlist changes
+  useEffect(() => {
+    if (hiddenIframeRef.current) {
+      const playlistIds = currentPlaylist.tracks.map(t => t.videoId).join(',')
+      hiddenIframeRef.current.src = `https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&list=${currentPlaylist.id}&loop=1&playlist=${playlistIds}&enablejsapi=1&controls=0&modestbranding=1&rel=0`
+    }
+  }, [currentTrack, currentPlaylist, isPlaying, isMuted])
+
+  const handlePlaylistChange = (playlist: typeof playlists[0]) => {
+    setCurrentPlaylist(playlist)
+    setCurrentTrack(playlist.tracks[0])
+    setIsPlaying(true)
+    setShowPlaylistSelector(false)
+  }
 
   const handlePlayPause = () => {
-    setIsPlaying(!isPlaying)
+    const newPlayingState = !isPlaying
+    setIsPlaying(newPlayingState)
+    
+    // Control hidden iframe playback
+    if (hiddenIframeRef.current && hiddenIframeRef.current.contentWindow) {
+      hiddenIframeRef.current.contentWindow.postMessage(
+        JSON.stringify({
+          event: 'command',
+          func: newPlayingState ? 'playVideo' : 'pauseVideo',
+          args: []
+        }),
+        '*'
+      )
+    }
   }
 
   const handleNextTrack = () => {
-    const currentIndex = playlist.findIndex(t => t.id === currentTrack.id)
-    const nextIndex = (currentIndex + 1) % playlist.length
-    setCurrentTrack(playlist[nextIndex])
+    const currentIndex = currentPlaylist.tracks.findIndex(t => t.id === currentTrack.id)
+    const nextIndex = (currentIndex + 1) % currentPlaylist.tracks.length
+    setCurrentTrack(currentPlaylist.tracks[nextIndex])
     setIsPlaying(true)
   }
 
   const handlePrevTrack = () => {
-    const currentIndex = playlist.findIndex(t => t.id === currentTrack.id)
-    const prevIndex = currentIndex === 0 ? playlist.length - 1 : currentIndex - 1
-    setCurrentTrack(playlist[prevIndex])
+    const currentIndex = currentPlaylist.tracks.findIndex(t => t.id === currentTrack.id)
+    const prevIndex = currentIndex === 0 ? currentPlaylist.tracks.length - 1 : currentIndex - 1
+    setCurrentTrack(currentPlaylist.tracks[prevIndex])
     setIsPlaying(true)
   }
 
@@ -45,6 +125,22 @@ export function MusicPlayer() {
 
   return (
     <>
+      {/* Hidden iframe for background playback - starts automatically */}
+      <iframe
+        ref={hiddenIframeRef}
+        src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&list=${currentPlaylist.id}&loop=1&playlist=${currentPlaylist.tracks.map(t => t.videoId).join(',')}&enablejsapi=1&controls=0&modestbranding=1&rel=0`}
+        title="YouTube background player"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        className="fixed opacity-0 pointer-events-none"
+        style={{ 
+          width: '1px', 
+          height: '1px', 
+          left: '-9999px', 
+          top: '-9999px',
+          border: 'none'
+        }}
+      />
+
       {/* Minimized player bar */}
       <div 
         className={`fixed bottom-0 left-0 right-0 z-[100] transition-all duration-500 ${
@@ -159,11 +255,46 @@ export function MusicPlayer() {
             Cerrar
           </button>
 
-          {/* YouTube embed - show when expanded and playing */}
+          {/* Playlist Selector */}
+          {showPlaylistSelector && (
+            <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 w-full max-w-md bg-[#1a1a1a] border border-white/10 rounded-lg p-4 max-h-96 overflow-y-auto">
+              <p className="font-mono text-xs tracking-[0.2em] text-white/40 uppercase mb-4 text-center">
+                Seleccionar Playlist
+              </p>
+              <div className="space-y-2">
+                {playlists.map((playlist) => (
+                  <button
+                    key={playlist.id}
+                    onClick={() => handlePlaylistChange(playlist)}
+                    className={`w-full flex items-center gap-3 p-3 transition-all ${
+                      currentPlaylist.id === playlist.id 
+                        ? "bg-[#F25835]/20 border border-[#F25835]/50" 
+                        : "bg-transparent hover:bg-white/5 border border-transparent"
+                    }`}
+                  >
+                    <Music className={`w-4 h-4 ${currentPlaylist.id === playlist.id ? 'text-[#F25835]' : 'text-white/40'}`} />
+                    <div className="flex-1 text-left">
+                      <p className={`font-serif text-sm ${currentPlaylist.id === playlist.id ? 'text-white' : 'text-white/70'}`}>
+                        {playlist.name}
+                      </p>
+                      <p className="font-mono text-[10px] text-white/40 uppercase">
+                        {playlist.tracks.length} tracks
+                      </p>
+                    </div>
+                    {currentPlaylist.id === playlist.id && (
+                      <span className="w-2 h-2 rounded-full bg-[#F25835]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* YouTube embed - show when expanded */}
           <div className="w-full max-w-3xl aspect-video bg-[#1a1a1a] rounded-lg overflow-hidden mb-6 sm:mb-8">
             <iframe
               ref={iframeRef}
-              src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&list=PLUBCMmrhkcuNEAsn-nkW4Pm5-EgDpil65`}
+              src={`https://www.youtube.com/embed/${currentTrack.videoId}?autoplay=${isPlaying ? 1 : 0}&mute=${isMuted ? 1 : 0}&list=${currentPlaylist.id}&loop=1&playlist=${currentPlaylist.tracks.map(t => t.videoId).join(',')}&enablejsapi=1`}
               title="YouTube video player"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -179,9 +310,17 @@ export function MusicPlayer() {
             <h3 className="font-serif text-2xl sm:text-4xl text-white italic">
               {currentTrack.title}
             </h3>
-            <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mt-2">
-              Guateke
-            </p>
+            <div className="flex items-center justify-center gap-3 mt-2">
+              <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase">
+                {currentPlaylist.artist}
+              </p>
+              <button
+                onClick={() => setShowPlaylistSelector(!showPlaylistSelector)}
+                className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-[#F25835] hover:text-white uppercase transition-colors"
+              >
+                • Cambiar playlist
+              </button>
+            </div>
           </div>
 
           {/* Playlist */}
@@ -190,7 +329,7 @@ export function MusicPlayer() {
               Playlist
             </p>
             <div className="space-y-2">
-              {playlist.map((track, index) => (
+              {currentPlaylist.tracks.map((track, index) => (
                 <button
                   key={track.id}
                   onClick={() => {
