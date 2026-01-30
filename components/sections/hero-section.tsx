@@ -2,14 +2,13 @@
 
 import Image from "next/image"
 
-type HeroSubSection = "main" | "videos" | "film" | "photos"
-
 interface HeroSectionProps {
   isActive: boolean
-  onNavigateToSub: (sub: HeroSubSection) => void
+  /** Navegar a una sala de la galería (Videos, Film, Fotos = salas abajo) */
+  onNavigateToRoom?: (room: "videos" | "film" | "photos") => void
 }
 
-export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
+export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
   return (
     <section className="relative h-full w-full flex-shrink-0">
       {/* Background with gradient blend */}
@@ -56,7 +55,7 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
             }`}
           >
             <button 
-              onClick={() => onNavigateToSub("videos")}
+              onClick={() => onNavigateToRoom?.("videos")}
               className="group text-left touch-manipulation"
             >
               <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white mb-0.5 sm:mb-1 transition-colors group-active:text-[#F25835] md:group-hover:text-[#F25835]">
@@ -67,7 +66,7 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
               </p>
             </button>
             <button 
-              onClick={() => onNavigateToSub("film")}
+              onClick={() => onNavigateToRoom?.("film")}
               className="group text-left touch-manipulation"
             >
               <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 italic transition-colors group-active:text-white md:group-hover:text-white">
@@ -78,7 +77,7 @@ export function HeroSection({ isActive, onNavigateToSub }: HeroSectionProps) {
               </p>
             </button>
             <button 
-              onClick={() => onNavigateToSub("photos")}
+              onClick={() => onNavigateToRoom?.("photos")}
               className="group text-left touch-manipulation"
             >
               <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 italic transition-colors group-active:text-white md:group-hover:text-white">

@@ -2,17 +2,26 @@
 
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
+import type { GalleryRoomId } from "@/lib/gallery-map"
 
 interface GalleryHeaderProps {
-  currentSection: string
-  onNavigate: (section: "inicio" | "artistas" | "lanzamientos" | "albumes") => void
+  currentSection: GalleryRoomId
+  onNavigate: (section: GalleryRoomId) => void
 }
 
-const navItems = [
-  { id: "artistas", label: "ARTISTAS" },
-  { id: "lanzamientos", label: "LANZAMIENTOS" },
-  { id: "albumes", label: "ALBUMES" },
-] as const
+/** Pasillo principal: derecha desde Inicio */
+const mainCorridor = [
+  { id: "artistas" as const, label: "ARTISTAS" },
+  { id: "lanzamientos" as const, label: "LANZAMIENTOS" },
+  { id: "albumes" as const, label: "ALBUMES" },
+]
+
+/** Salas abajo (bajar desde Inicio / Artistas / Lanzamientos) */
+const roomsBelow = [
+  { id: "videos" as const, label: "VIDEOS" },
+  { id: "film" as const, label: "FILM" },
+  { id: "photos" as const, label: "FOTOS" },
+]
 
 export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -62,9 +71,9 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
         </button>
       </div>
 
-      {/* Desktop Navigation */}
-      <nav className="hidden md:flex items-center gap-12">
-        {navItems.map((item) => (
+      {/* Desktop: pasillo + salas abajo (concepto galería) */}
+      <nav className="hidden md:flex items-center gap-8">
+        {mainCorridor.map((item) => (
           <button
             key={item.id}
             onClick={() => onNavigate(item.id)}
@@ -72,6 +81,20 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
               currentSection === item.id
                 ? "text-white"
                 : "text-white/50 hover:text-white"
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+        <span className="text-white/20 font-mono text-xs">|</span>
+        {roomsBelow.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onNavigate(item.id)}
+            className={`font-mono text-xs tracking-[0.15em] transition-colors ${
+              currentSection === item.id
+                ? "text-[#F25835]"
+                : "text-white/40 hover:text-white/70"
             }`}
           >
             {item.label}
@@ -116,7 +139,7 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
             onClick={() => setIsMenuOpen(false)}
           />
           
-          {/* Menu Content */}
+          {/* Menu Content: mapa de la galería (pasillo + salas abajo) */}
           <div className="fixed left-0 right-0 bottom-0 top-16 md:top-20 z-[99] md:hidden overflow-y-auto pointer-events-auto bg-[#0a0a0a]">
             <nav className="flex flex-col items-start gap-6 sm:gap-8 p-6 sm:p-8 min-h-full">
               <button
@@ -132,21 +155,40 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
               >
                 Inicio
               </button>
-              {navItems.map((item, index) => (
+              <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-2">
+                Pasillo
+              </p>
+              {mainCorridor.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => {
                     onNavigate(item.id)
                     setIsMenuOpen(false)
                   }}
-                  className={`font-serif text-3xl sm:text-4xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                  className={`font-serif text-2xl sm:text-3xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
                     currentSection === item.id 
                       ? "text-white" 
                       : "text-white/50 active:text-white"
                   }`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
+                >
+                  {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
+                </button>
+              ))}
+              <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-4">
+                Salas abajo
+              </p>
+              {roomsBelow.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    onNavigate(item.id)
+                    setIsMenuOpen(false)
                   }}
+                  className={`font-serif text-xl sm:text-2xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                    currentSection === item.id 
+                      ? "text-[#F25835]" 
+                      : "text-white/50 active:text-white"
+                  }`}
                 >
                   {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
                 </button>
