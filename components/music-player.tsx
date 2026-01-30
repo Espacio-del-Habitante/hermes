@@ -74,7 +74,7 @@ declare global {
 }
 
 // Multiple YouTube playlists from the channel
-const playlists = [
+export const playlists = [
   {
     id: "PLUBCMmrhkcuNEAsn-nkW4Pm5-EgDpil65",
     name: "Guateke",
@@ -122,8 +122,6 @@ const playlists = [
       { id: 5, title: "Filme Gris", videoId: "lVnyBBF5EVM" },
       { id: 6, title: "Sobredosis", videoId: "BC7ZrdvmIlo" },
       { id: 7, title: "Outro", videoId: "O4I0brx0Tfk" },
-
-      // Add more tracks from this playlist here
     ],
   },
   {
@@ -140,8 +138,6 @@ const playlists = [
       { id: 7, title: "Tengo", videoId: "ZL6-bItEnj4" },
       { id: 8, title: "Interludio Interestelar", videoId: "6EpDlna2o0Y" },
       { id: 9, title: "Outro AKA La Re Buena", videoId: "jZHnNoV4lVQ" },
-
-      // Add more tracks from this playlist here
     ],
   },
 ];
@@ -369,17 +365,49 @@ export function MusicPlayer() {
     }
   }, [hasUserInteracted]);
 
-  // Expose startPlaying function to window for external access
+  // Expose control functions to window for external access
   useEffect(() => {
     if (typeof window !== "undefined") {
       (window as any).startMusicPlayer = startPlaying;
+      (window as any).playPlaylist = (playlistName: string) => {
+        const playlist = playlists.find(p => p.name === playlistName);
+        if (playlist) {
+          setCurrentPlaylist(playlist);
+          setCurrentTrack(playlist.tracks[0]);
+          setIsPlaying(true);
+          setShowPlaylistSelector(false);
+          if (!hasUserInteracted) {
+            startPlaying();
+          }
+        }
+      };
+      (window as any).playTrack = (playlistName: string, trackTitle: string) => {
+        const playlist = playlists.find(p => p.name === playlistName);
+        if (playlist) {
+          const track = playlist.tracks.find(t => t.title === trackTitle);
+          if (track) {
+            setCurrentPlaylist(playlist);
+            setCurrentTrack(track);
+            setIsPlaying(true);
+            if (!hasUserInteracted) {
+              startPlaying();
+            }
+          }
+        }
+      };
+      (window as any).getCurrentPlaylist = () => currentPlaylist;
+      (window as any).getCurrentTrack = () => currentTrack;
     }
     return () => {
       if (typeof window !== "undefined") {
         delete (window as any).startMusicPlayer;
+        delete (window as any).playPlaylist;
+        delete (window as any).playTrack;
+        delete (window as any).getCurrentPlaylist;
+        delete (window as any).getCurrentTrack;
       }
     };
-  }, [startPlaying]);
+  }, [startPlaying, hasUserInteracted, currentPlaylist, currentTrack]);
 
   // Control volume and mute via YouTube API
   useEffect(() => {

@@ -1,49 +1,94 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { playlists } from "@/components/music-player"
 
 interface AlumesSectionProps {
   isActive: boolean
 }
 
+// Map albums to playlists
 const albums = [
   {
     id: 1,
     title: "Guateke",
-    artist: "El Colectivo",
+    artist: "Grioth & Kiro",
     year: "2022",
     image: "/images/guateke-cover.png",
     color: "#F25835",
+    playlistName: "Guateke",
   },
   {
     id: 2,
     title: "Probando la Sopa",
-    artist: "Guateke",
+    artist: "Grioth",
     year: "2023",
     image: "/images/probando-la-sopa.png",
     color: "#F29422",
+    playlistName: "Probando la Sopa",
   },
   {
     id: 3,
-    title: "Cubanitos Son",
-    artist: "Probando la Sopa",
+    title: "KITDROGA-EP",
+    artist: "Kiro",
     year: "2024",
     image: "/images/cubanitos-cover.png",
     color: "#9AD9B0",
+    playlistName: "KITDROGA-EP",
   },
-]
-
-const tracks = [
-  { id: 1, title: "Probando la Sopa", duration: "4:12" },
-  { id: 2, title: "Cubanitos", duration: "3:28" },
-  { id: 3, title: "Noches en La Habana", duration: "5:01" },
-  { id: 4, title: "Suenos Tropicales", duration: "4:33" },
+  {
+    id: 4,
+    title: "Con mas ganas de hacer rap que de trabajar",
+    artist: "Grioth & Kiro",
+    year: "2024",
+    image: "/images/guateke-cover.png",
+    color: "#F25835",
+    playlistName: "Con mas ganas de hacer rap que de trabajar",
+  },
 ]
 
 export function AlbumesSection({ isActive }: AlumesSectionProps) {
   const [selectedAlbum, setSelectedAlbum] = useState(albums[1])
   const [hoveredTrack, setHoveredTrack] = useState<number | null>(null)
+  const [currentPlaylist, setCurrentPlaylist] = useState<typeof playlists[0] | null>(null)
+  const [currentTrack, setCurrentTrack] = useState<typeof playlists[0]['tracks'][0] | null>(null)
+
+  // Get current playlist and track from music player
+  useEffect(() => {
+    const updateCurrentTrack = () => {
+      if (typeof window !== 'undefined' && (window as any).getCurrentPlaylist && (window as any).getCurrentTrack) {
+        const playlist = (window as any).getCurrentPlaylist()
+        const track = (window as any).getCurrentTrack()
+        if (playlist) setCurrentPlaylist(playlist)
+        if (track) setCurrentTrack(track)
+      }
+    }
+    
+    updateCurrentTrack()
+    const interval = setInterval(updateCurrentTrack, 500)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Get tracks for selected album
+  const getTracksForAlbum = () => {
+    const playlist = playlists.find(p => p.name === selectedAlbum.playlistName)
+    return playlist?.tracks || []
+  }
+
+  const handleTrackClick = (track: typeof playlists[0]['tracks'][0]) => {
+    if (typeof window !== 'undefined' && (window as any).playTrack) {
+      (window as any).playTrack(selectedAlbum.playlistName, track.title)
+    }
+  }
+
+  const handleAlbumClick = (album: typeof albums[0]) => {
+    setSelectedAlbum(album)
+    // Start playing the playlist when album is selected
+    if (typeof window !== 'undefined' && (window as any).playPlaylist) {
+      (window as any).playPlaylist(album.playlistName)
+    }
+  }
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 flex flex-col md:flex-row overflow-hidden">
@@ -129,7 +174,7 @@ export function AlbumesSection({ isActive }: AlumesSectionProps) {
           {albums.map((album) => (
             <button
               key={album.id}
-              onClick={() => setSelectedAlbum(album)}
+              onClick={() => handleAlbumClick(album)}
               className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 transition-all duration-300 touch-manipulation ${
                 selectedAlbum.id === album.id 
                   ? "ring-2 ring-offset-1 md:ring-offset-2 ring-offset-[#1a1a1a]"
@@ -159,60 +204,58 @@ export function AlbumesSection({ isActive }: AlumesSectionProps) {
             Tracklist
           </p>
           <div className="space-y-1 md:space-y-2">
-            {tracks.map((track, index) => (
-              <div
-                key={track.id}
-                className={`flex items-center justify-between p-2.5 sm:p-3 md:p-4 cursor-pointer transition-all touch-manipulation ${
-                  hoveredTrack === track.id 
-                    ? "bg-[#252525]" 
-                    : "bg-transparent active:bg-[#252525]"
-                }`}
-                onMouseEnter={() => setHoveredTrack(track.id)}
-                onMouseLeave={() => setHoveredTrack(null)}
-                onTouchStart={() => setHoveredTrack(track.id)}
-                onTouchEnd={() => setHoveredTrack(null)}
-              >
-                <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
-                  <span 
-                    className={`font-mono text-xs sm:text-sm transition-colors flex-shrink-0 ${
-                      hoveredTrack === track.id 
-                        ? "text-[#F25835]" 
-                        : "text-white/30"
-                    }`}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span 
-                    className={`font-serif text-sm sm:text-base md:text-lg transition-colors truncate ${
-                      hoveredTrack === track.id 
-                        ? "text-white" 
-                        : "text-white/70"
-                    }`}
-                  >
-                    {track.title}
-                  </span>
-                </div>
-                <span className="font-mono text-xs sm:text-sm text-white/30 flex-shrink-0 ml-2">
-                  {track.duration}
-                </span>
-              </div>
-            ))}
+            {getTracksForAlbum().map((track, index) => {
+              const isCurrentTrack = currentPlaylist?.name === selectedAlbum.playlistName && 
+                                     currentTrack?.id === track.id
+              const isHovered = hoveredTrack === track.id
+              
+              return (
+                <button
+                  key={track.id}
+                  onClick={() => handleTrackClick(track)}
+                  className={`w-full flex items-center justify-between p-2.5 sm:p-3 md:p-4 cursor-pointer transition-all touch-manipulation ${
+                    isHovered || isCurrentTrack
+                      ? "bg-[#252525]" 
+                      : "bg-transparent active:bg-[#252525]"
+                  }`}
+                  onMouseEnter={() => setHoveredTrack(track.id)}
+                  onMouseLeave={() => setHoveredTrack(null)}
+                  onTouchStart={() => setHoveredTrack(track.id)}
+                  onTouchEnd={() => setHoveredTrack(null)}
+                >
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0 flex-1">
+                    <span 
+                      className={`font-mono text-xs sm:text-sm transition-colors flex-shrink-0 ${
+                        isHovered || isCurrentTrack
+                          ? "text-[#F25835]" 
+                          : "text-white/30"
+                      }`}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span 
+                      className={`font-serif text-sm sm:text-base md:text-lg transition-colors truncate text-left ${
+                        isHovered || isCurrentTrack
+                          ? "text-white" 
+                          : "text-white/70"
+                      }`}
+                    >
+                      {track.title}
+                    </span>
+                  </div>
+                  {isCurrentTrack && (
+                    <span className="ml-auto flex items-center gap-1 flex-shrink-0">
+                      <span className="w-1 h-3 bg-[#9AD9B0] animate-pulse" />
+                      <span className="w-1 h-4 bg-[#9AD9B0] animate-pulse delay-75" />
+                      <span className="w-1 h-2 bg-[#9AD9B0] animate-pulse delay-150" />
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Progress bar decoration */}
-        <div className="mt-4 md:mt-auto pt-4 md:pt-8">
-          <div className="flex items-center justify-between mb-1.5 md:mb-2">
-            <span className="font-mono text-[10px] sm:text-xs text-white/30">1:23</span>
-            <span className="font-mono text-[10px] sm:text-xs text-white/30">3:28</span>
-          </div>
-          <div className="h-[2px] bg-[#252525] rounded-full overflow-hidden">
-            <div 
-              className="h-full w-[40%] rounded-full transition-all duration-300"
-              style={{ backgroundColor: selectedAlbum.color }}
-            />
-          </div>
-        </div>
       </div>
     </section>
   )
