@@ -133,7 +133,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
       </div>
 
       {/* Right - Album selector and tracklist */}
-      <div className="flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-4 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 overflow-y-auto">
+      <div className="flex-1 md:w-[480px] min-h-0 bg-[#1a1a1a] flex flex-col pt-6 pb-4 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12">
         {/* Header */}
         <div 
           className={`mb-4 md:mb-8 transition-all duration-700 delay-100 ${
@@ -211,16 +211,16 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
           ))}
         </div>
 
-        {/* Tracklist */}
+        {/* Tracklist - área con scroll para ver todas las pistas */}
         <div 
-          className={`flex-1 min-h-0 transition-all duration-700 delay-300 ${
+          className={`flex-1 min-h-0 flex flex-col transition-all duration-700 delay-300 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-4">
+          <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-4 shrink-0">
             Tracklist
           </p>
-          <div className="space-y-1 md:space-y-2">
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-1 md:space-y-2 pr-1">
             {getTracksForAlbum().map((track, index) => {
               const isCurrentTrack = currentPlaylist?.name === selectedAlbum.playlistName && 
                                      currentTrack?.id === track.id

@@ -121,10 +121,10 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto">
+      <div className="h-full min-h-0 flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12">
         {/* Header con botón de regreso */}
         <div 
-          className={`mb-8 transition-all duration-700 delay-100 ${
+          className={`shrink-0 mb-8 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
@@ -145,7 +145,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
         </div>
 
         {/* Navegación de secciones */}
-        <div className="mb-8 flex flex-wrap gap-4 border-b border-white/10 pb-4">
+        <div className="shrink-0 mb-4 flex flex-wrap gap-4 border-b border-white/10 pb-4">
           {sections.map((section) => (
             <button
               key={section.id}
@@ -161,8 +161,8 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
           ))}
         </div>
 
-        {/* Contenido de secciones */}
-        <div className="flex-1">
+        {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
           {activeSection === "albumes" && (
             <div 
               className={`transition-all duration-700 ${

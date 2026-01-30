@@ -22,7 +22,7 @@ const lanzamientos = [
     title: "Cubanitos",
     type: "Single",
     year: "2024",
-    image: "/images/cubanitos-cover.png",
+    image: "/images/covers/cubanitos-cover.png",
     tracks: 1,
     duration: "3:28",
   },

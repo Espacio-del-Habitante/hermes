@@ -25,10 +25,10 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
+      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
         {/* Header */}
         <div 
-          className={`mb-8 transition-all duration-700 delay-100 ${
+          className={`shrink-0 mb-8 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
@@ -40,14 +40,15 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
           </h2>
         </div>
 
-        {/* Photos masonry grid */}
-        <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr">
-          {photos.map((photo, index) => (
+        {/* Photos masonry grid — con scroll para ver todas las fotos */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 content-start">
+            {photos.map((photo, index) => (
             <button
               type="button"
               key={photo.id}
               onClick={() => setSelectedIndex(index)}
-              className={`group relative cursor-pointer overflow-hidden transition-all duration-700 text-left ${
+              className={`group relative cursor-pointer overflow-hidden transition-all duration-700 text-left aspect-square w-full ${
                 index === 0 ? "md:col-span-2 md:row-span-2" : ""
               } ${
                 isActive 
@@ -99,10 +100,11 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
               </div>
             </button>
           ))}
+          </div>
         </div>
 
         {/* Bottom hint */}
-        <div className="mt-6 flex items-center justify-between">
+        <div className="shrink-0 mt-6 flex items-center justify-between">
           <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
             Clic en una foto para ampliar · Flechas para navegar
           </p>

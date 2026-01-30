@@ -32,10 +32,10 @@ export function VideosSection({ isActive }: VideosSectionProps) {
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
+      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
         {/* Header */}
         <div 
-          className={`mb-8 transition-all duration-700 delay-100 ${
+          className={`shrink-0 mb-8 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
@@ -47,8 +47,9 @@ export function VideosSection({ isActive }: VideosSectionProps) {
           </h2>
         </div>
 
-        {/* Videos grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Videos grid — con scroll para ver todos */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {videos.map((video, index) => (
             <button
               type="button"
@@ -89,10 +90,11 @@ export function VideosSection({ isActive }: VideosSectionProps) {
               </div>
             </button>
           ))}
+          </div>
         </div>
 
         {/* Bottom hint */}
-        <div className="mt-6 flex items-center justify-between">
+        <div className="shrink-0 mt-6 flex items-center justify-between">
           <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
             Clic en un video para ampliar · Flechas para navegar
           </p>
