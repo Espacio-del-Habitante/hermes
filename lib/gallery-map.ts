@@ -11,16 +11,19 @@ export type GalleryRoomId =
   | "videos"
   | "film"
   | "photos"
+  | "grioth"
+  | "kiro"
 
 export interface GridPosition {
   row: number
   col: number
 }
 
-/** Qué sala hay en cada celda (row, col). Fila 0 = pasillo principal, fila 1 = salas abajo. */
+/** Qué sala hay en cada celda (row, col). Fila 0 = pasillo principal, fila 1 = salas abajo, fila 2 = salas individuales de artistas. */
 export const ROOM_AT_GRID: Record<number, Record<number, GalleryRoomId>> = {
   0: { 0: "inicio", 1: "artistas", 2: "lanzamientos", 3: "albumes" },
   1: { 0: "videos", 1: "film", 2: "photos" },
+  2: { 0: "grioth", 1: "kiro" },
 }
 
 /** Posición en grid de cada sala (para ir a una sala por nombre). */
@@ -32,10 +35,12 @@ export const GRID_AT_ROOM: Record<GalleryRoomId, GridPosition> = {
   videos: { row: 1, col: 0 },
   film: { row: 1, col: 1 },
   photos: { row: 1, col: 2 },
+  grioth: { row: 2, col: 0 },
+  kiro: { row: 2, col: 1 },
 }
 
 const GRID_COLS = 4
-const GRID_ROWS = 2
+const GRID_ROWS = 3
 
 export function getRoomAt(row: number, col: number): GalleryRoomId | null {
   const rowMap = ROOM_AT_GRID[row]

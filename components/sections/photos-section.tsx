@@ -2,20 +2,26 @@
 
 import Image from "next/image"
 import { useState } from "react"
+import { getGalleryImageUrl, GALLERY } from "@/lib/supabase-urls"
+import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
 
 interface PhotosSectionProps {
   isActive: boolean
 }
 
-const photos = [
-  { id: 1, src: "/images/guateke-cover.png", title: "Guateke Crew", category: "Retratos" },
-  { id: 2, src: "/images/probando-la-sopa.png", title: "Arte Urbano", category: "Arte" },
-  { id: 3, src: "/images/cubanitos-cover.png", title: "Sesion Cubanitos", category: "Detras de Camaras" },
-  { id: 4, src: "/images/cuadro-removebg-preview.png", title: "La Obra", category: "Arte" },
-]
+// Generar fotos de galería (conjuntas)
+const photos = Array.from({ length: GALLERY.imageCount }, (_, i) => ({
+  id: i + 1,
+  src: getGalleryImageUrl(i + 1),
+  title: `Galería - Foto ${i + 1}`,
+  category: "El Colectivo"
+}))
+
+const photosForLightbox = photos.map((p) => ({ src: p.src, title: p.title }))
 
 export function PhotosSection({ isActive }: PhotosSectionProps) {
   const [hoveredPhoto, setHoveredPhoto] = useState<number | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
@@ -37,9 +43,11 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
         {/* Photos masonry grid */}
         <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 auto-rows-fr">
           {photos.map((photo, index) => (
-            <div
+            <button
+              type="button"
               key={photo.id}
-              className={`group relative cursor-pointer overflow-hidden transition-all duration-700 ${
+              onClick={() => setSelectedIndex(index)}
+              className={`group relative cursor-pointer overflow-hidden transition-all duration-700 text-left ${
                 index === 0 ? "md:col-span-2 md:row-span-2" : ""
               } ${
                 isActive 
@@ -51,12 +59,13 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
               onMouseLeave={() => setHoveredPhoto(null)}
             >
               <Image
-                src={photo.src || "/placeholder.svg"}
+                src={photo.src}
                 alt={photo.title}
                 fill
                 className={`object-cover transition-all duration-500 ${
                   hoveredPhoto === photo.id ? "scale-105" : "scale-100"
                 }`}
+                unoptimized
               />
               {/* Overlay */}
               <div 
@@ -88,14 +97,14 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
                 <div className="absolute top-0 right-0 w-full h-[2px] bg-[#9AD9B0]" />
                 <div className="absolute top-0 right-0 h-full w-[2px] bg-[#9AD9B0]" />
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
         {/* Bottom hint */}
         <div className="mt-6 flex items-center justify-between">
           <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
-            Scroll up to return
+            Clic en una foto para ampliar · Flechas para navegar
           </p>
           <div className="flex items-center gap-2">
             <span className="w-8 h-[1px] bg-[#9AD9B0]" />
@@ -103,6 +112,14 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
           </div>
         </div>
       </div>
+
+      <PhotoGalleryLightbox
+        photos={photosForLightbox}
+        selectedIndex={selectedIndex}
+        onClose={() => setSelectedIndex(null)}
+        onSelectIndex={setSelectedIndex}
+        unoptimized
+      />
     </section>
   )
 }

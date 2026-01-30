@@ -3,53 +3,34 @@
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { playlists } from "@/components/music-player"
+import { ALBUMS, getArtistIdsFromAlbum, type ArtistId } from "@/lib/albums"
+import { ARTISTS } from "@/lib/supabase-urls"
+import { ArrowRight } from "lucide-react"
 
 interface AlumesSectionProps {
   isActive: boolean
+  /** Si viene de la sala de un artista, preseleccionar este álbum. */
+  initialAlbumId?: number | null
+  /** Llamar cuando ya se aplicó el initialAlbumId (para limpiar el estado en el padre). */
+  onViewedInitialAlbum?: () => void
+  /** Ir a la sala del artista (conectar con la sección Artistas). */
+  onNavigateToArtist?: (artistId: ArtistId) => void
 }
 
-// Map albums to playlists
-const albums = [
-  {
-    id: 1,
-    title: "Guateke",
-    artist: "Grioth & Kiro",
-    year: "2022",
-    image: "/images/guateke-cover.png",
-    color: "#F25835",
-    playlistName: "Guateke",
-  },
-  {
-    id: 2,
-    title: "Probando la Sopa",
-    artist: "Grioth",
-    year: "2023",
-    image: "/images/probando-la-sopa.png",
-    color: "#F29422",
-    playlistName: "Probando la Sopa",
-  },
-  {
-    id: 3,
-    title: "KITDROGA-EP",
-    artist: "Kiro",
-    year: "2024",
-    image: "/images/cubanitos-cover.png",
-    color: "#9AD9B0",
-    playlistName: "KITDROGA-EP",
-  },
-  {
-    id: 4,
-    title: "Con mas ganas de hacer rap que de trabajar",
-    artist: "Grioth & Kiro",
-    year: "2024",
-    image: "/images/guateke-cover.png",
-    color: "#F25835",
-    playlistName: "Con mas ganas de hacer rap que de trabajar",
-  },
-]
+const albums = ALBUMS
 
-export function AlbumesSection({ isActive }: AlumesSectionProps) {
+export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum, onNavigateToArtist }: AlumesSectionProps) {
   const [selectedAlbum, setSelectedAlbum] = useState(albums[1])
+
+  // Aplicar álbum preseleccionado al llegar desde la sala de un artista
+  useEffect(() => {
+    if (initialAlbumId == null || !isActive) return
+    const album = albums.find((a) => a.id === initialAlbumId)
+    if (album) {
+      setSelectedAlbum(album)
+      onViewedInitialAlbum?.()
+    }
+  }, [isActive, initialAlbumId, onViewedInitialAlbum])
   const [hoveredTrack, setHoveredTrack] = useState<number | null>(null)
   const [currentPlaylist, setCurrentPlaylist] = useState<typeof playlists[0] | null>(null)
   const [currentTrack, setCurrentTrack] = useState<typeof playlists[0]['tracks'][0] | null>(null)
@@ -89,6 +70,8 @@ export function AlbumesSection({ isActive }: AlumesSectionProps) {
       (window as any).playPlaylist(album.playlistName)
     }
   }
+
+  const artistIdsInAlbum = getArtistIdsFromAlbum(selectedAlbum)
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 flex flex-col md:flex-row overflow-hidden">
@@ -165,6 +148,38 @@ export function AlbumesSection({ isActive }: AlumesSectionProps) {
           </h2>
         </div>
 
+        {/* Artistas en este álbum */}
+        {artistIdsInAlbum.length > 0 && onNavigateToArtist && (
+          <div 
+            className={`mb-4 md:mb-6 transition-all duration-700 delay-150 ${
+              isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+            }`}
+          >
+            <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-2 md:mb-3">
+              Artistas en este álbum
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {artistIdsInAlbum.map((id) => {
+                const artist = ARTISTS[id]
+                if (!artist) return null
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => onNavigateToArtist(id)}
+                    className="group flex items-center gap-1.5 px-3 py-2 rounded border border-white/20 hover:border-[#F25835] hover:bg-white/5 transition-colors text-left"
+                  >
+                    <span className="font-serif text-sm md:text-base text-white/80 group-hover:text-[#F25835] transition-colors">
+                      {artist.name}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-white/40 group-hover:text-[#F25835] group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Album selector */}
         <div 
           className={`flex gap-3 sm:gap-4 mb-4 md:mb-8 overflow-x-auto scrollbar-hide transition-all duration-700 delay-200 ${
@@ -180,9 +195,11 @@ export function AlbumesSection({ isActive }: AlumesSectionProps) {
                   ? "ring-2 ring-offset-1 md:ring-offset-2 ring-offset-[#1a1a1a]"
                   : "opacity-50 active:opacity-80 md:hover:opacity-80"
               }`}
-              style={{ 
-                ringColor: selectedAlbum.id === album.id ? album.color : "transparent" 
-              }}
+              style={
+                selectedAlbum.id === album.id
+                  ? ({ ["--tw-ring-color" as string]: album.color } as React.CSSProperties)
+                  : undefined
+              }
             >
               <Image
                 src={album.image || "/placeholder.svg"}

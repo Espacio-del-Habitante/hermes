@@ -7,6 +7,7 @@ import { VideosSection } from "@/components/sections/videos-section"
 import { FilmSection } from "@/components/sections/film-section"
 import { PhotosSection } from "@/components/sections/photos-section"
 import { ArtistasSection } from "@/components/sections/artistas-section"
+import { ArtistRoomSection } from "@/components/sections/artist-room-section"
 import { LanzamientosSection } from "@/components/sections/lanzamientos-section"
 import { AlbumesSection } from "@/components/sections/albumes-section"
 import { MusicPlayer } from "@/components/music-player"
@@ -28,6 +29,8 @@ export default function Home() {
   const [row, setRow] = useState(0)
   const [col, setCol] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  /** Al navegar a Álbumes desde una sala de artista, preseleccionar este álbum. */
+  const [albumIdToSelectInAlbumes, setAlbumIdToSelectInAlbumes] = useState<number | null>(null)
 
   const currentRoom = getRoomAt(row, col) ?? "inicio"
 
@@ -53,8 +56,12 @@ export default function Home() {
   )
 
   const navigateToRoom = useCallback(
-    (room: GalleryRoomId) => {
-      if (isTransitioning || room === currentRoom) return
+    (room: GalleryRoomId, options?: { albumId?: number }) => {
+      if (isTransitioning) return
+      if (options?.albumId != null && room === "albumes") {
+        setAlbumIdToSelectInAlbumes(options.albumId)
+      }
+      if (room === currentRoom && !options?.albumId) return
       const pos = GRID_AT_ROOM[room]
       goTo(pos.row, pos.col)
     },
@@ -154,11 +161,11 @@ export default function Home() {
           style={{
             width: `${GRID_COLUMNS * 100}vw`,
             height: `${GRID_ROW_COUNT * 100}%`,
-            transform: `translate(-${col * 100}vw, -${row * 50}%)`,
+            transform: `translate(-${col * 100}vw, -${row * (100 / GRID_ROW_COUNT)}%)`,
           }}
         >
           {/* Fila 0: Inicio, Artistas, Lanzamientos, Albumes */}
-          <div className="flex flex-shrink-0 w-full" style={{ height: "50%" }}>
+          <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <HeroSection
                 isActive={currentRoom === "inicio"}
@@ -166,17 +173,25 @@ export default function Home() {
               />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <ArtistasSection isActive={currentRoom === "artistas"} />
+              <ArtistasSection 
+                isActive={currentRoom === "artistas"} 
+                onNavigateToArtist={navigateToRoom}
+              />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <LanzamientosSection isActive={currentRoom === "lanzamientos"} />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <AlbumesSection isActive={currentRoom === "albumes"} />
+              <AlbumesSection
+                isActive={currentRoom === "albumes"}
+                initialAlbumId={albumIdToSelectInAlbumes}
+                onViewedInitialAlbum={() => setAlbumIdToSelectInAlbumes(null)}
+                onNavigateToArtist={(artistId) => navigateToRoom(artistId)}
+              />
             </div>
           </div>
           {/* Fila 1: Videos, Film, Photos */}
-          <div className="flex flex-shrink-0 w-full" style={{ height: "50%" }}>
+          <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <VideosSection isActive={currentRoom === "videos"} />
             </div>
@@ -186,6 +201,27 @@ export default function Home() {
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <PhotosSection isActive={currentRoom === "photos"} />
             </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
+          </div>
+          {/* Fila 2: Salas individuales de artistas */}
+          <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "grioth"} 
+                artistId="grioth"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "kiro"} 
+                artistId="kiro"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
             <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
           </div>
         </div>

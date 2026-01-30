@@ -2,37 +2,33 @@
 
 import Image from "next/image"
 import { useState } from "react"
+import { getArtistImageUrl, ARTISTS } from "@/lib/supabase-urls"
+import type { GalleryRoomId } from "@/lib/gallery-map"
 
 interface ArtistasSectionProps {
   isActive: boolean
+  onNavigateToArtist?: (artistId: GalleryRoomId) => void
 }
 
 const artistas = [
   { 
-    id: 1, 
-    name: "El Colectivo", 
-    role: "Guateke",
-    image: "/images/guateke-cover.png",
-    description: "Grupo fundador del movimiento hip-hop en Cali"
+    id: "grioth" as const, 
+    name: ARTISTS.grioth.name, 
+    role: "Artista",
+    imageUrl: getArtistImageUrl("grioth", 1),
+    description: "Rapero y compositor del Valle del Cauca"
   },
   { 
-    id: 2, 
-    name: "Probando la Sopa", 
-    role: "Album 2023",
-    image: "/images/probando-la-sopa.png",
-    description: "Arte visual que representa la esencia del Pacifico"
-  },
-  { 
-    id: 3, 
-    name: "Cubanitos", 
-    role: "Single",
-    image: "/images/cubanitos-cover.png",
-    description: "Fusion tropical con sonidos urbanos contemporaneos"
+    id: "kiro" as const, 
+    name: ARTISTS.kiro.name, 
+    role: "Artista",
+    imageUrl: getArtistImageUrl("kiro", 1),
+    description: "Rapero y compositor del Valle del Cauca"
   },
 ]
 
-export function ArtistasSection({ isActive }: ArtistasSectionProps) {
-  const [hoveredArtist, setHoveredArtist] = useState<number | null>(null)
+export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectionProps) {
+  const [hoveredArtist, setHoveredArtist] = useState<string | null>(null)
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
@@ -52,7 +48,7 @@ export function ArtistasSection({ isActive }: ArtistasSectionProps) {
         </div>
 
         {/* Artists grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl">
           {artistas.map((artista, index) => (
             <div
               key={artista.id}
@@ -64,11 +60,12 @@ export function ArtistasSection({ isActive }: ArtistasSectionProps) {
               style={{ transitionDelay: `${200 + index * 100}ms` }}
               onMouseEnter={() => setHoveredArtist(artista.id)}
               onMouseLeave={() => setHoveredArtist(null)}
+              onClick={() => onNavigateToArtist?.(artista.id)}
             >
               {/* Image container */}
               <div className="relative aspect-square overflow-hidden bg-[#1a1a1a]">
                 <Image
-                  src={artista.image || "/placeholder.svg"}
+                  src={artista.imageUrl}
                   alt={artista.name}
                   fill
                   className={`object-cover transition-all duration-500 ${
@@ -76,6 +73,7 @@ export function ArtistasSection({ isActive }: ArtistasSectionProps) {
                       ? "scale-105" 
                       : "scale-100"
                   }`}
+                  unoptimized
                 />
                 {/* Overlay */}
                 <div 
@@ -105,7 +103,7 @@ export function ArtistasSection({ isActive }: ArtistasSectionProps) {
 
               {/* Info */}
               <div className="mt-4">
-                <p className="font-mono text-[10px] tracking-[0.2em] text-white/40 uppercase mb-1">
+                <p className="font-mono text-[10px] tracking-[0.2em] text-[#F25835] uppercase mb-1">
                   {artista.role}
                 </p>
                 <h3 className="font-serif text-2xl text-white group-hover:text-[#F25835] transition-colors">

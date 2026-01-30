@@ -2,36 +2,26 @@
 
 import Image from "next/image"
 import { Play } from "lucide-react"
+import { getGalleryVideoUrl, getGalleryImageUrl, GALLERY } from "@/lib/supabase-urls"
+import { useState } from "react"
 
 interface VideosSectionProps {
   isActive: boolean
 }
 
-const videos = [
-  {
-    id: 1,
-    title: "Cubanitos - Video Oficial",
-    duration: "3:28",
-    thumbnail: "/images/cubanitos-cover.png",
-    views: "12.4K"
-  },
-  {
-    id: 2,
-    title: "Probando la Sopa - Live Session",
-    duration: "15:42",
-    thumbnail: "/images/probando-la-sopa.png",
-    views: "8.2K"
-  },
-  {
-    id: 3,
-    title: "El Colectivo - Documentary",
-    duration: "24:18",
-    thumbnail: "/images/guateke-cover.png",
-    views: "5.7K"
-  },
-]
+// Generar videos de galería
+const videos = Array.from({ length: GALLERY.videoCount }, (_, i) => ({
+  id: i + 1,
+  title: `Galería - Video ${i + 1}`,
+  duration: "0:00",
+  thumbnail: getGalleryImageUrl(i + 1),
+  videoUrl: getGalleryVideoUrl(i + 1),
+  views: "0"
+}))
 
 export function VideosSection({ isActive }: VideosSectionProps) {
+  const [playingVideo, setPlayingVideo] = useState<number | null>(null)
+
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
       <div className="h-full flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
@@ -61,29 +51,41 @@ export function VideosSection({ isActive }: VideosSectionProps) {
               }`}
               style={{ transitionDelay: `${200 + index * 100}ms` }}
             >
-              {/* Thumbnail */}
+              {/* Video container */}
               <div className="relative aspect-video overflow-hidden bg-[#1a1a1a]">
-                <Image
-                  src={video.thumbnail || "/placeholder.svg"}
-                  alt={video.title}
-                  fill
-                  className="object-cover"
-                />
-                {/* Play overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all">
-                  <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform">
-                    <Play className="w-6 h-6 text-white fill-white ml-1" />
-                  </div>
-                </div>
-                {/* Duration */}
-                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/80 font-mono text-xs text-white">
-                  {video.duration}
-                </div>
-                {/* Accent corner */}
-                <div className="absolute top-0 left-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-[#F25835]" />
-                  <div className="absolute top-0 left-0 h-full w-[2px] bg-[#F25835]" />
-                </div>
+                {playingVideo === video.id ? (
+                  <video
+                    src={video.videoUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-cover"
+                    onEnded={() => setPlayingVideo(null)}
+                  />
+                ) : (
+                  <>
+                    <Image
+                      src={video.thumbnail}
+                      alt={video.title}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                    {/* Play overlay */}
+                    <div 
+                      className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                      onClick={() => setPlayingVideo(video.id)}
+                    >
+                      <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform">
+                        <Play className="w-6 h-6 text-white fill-white ml-1" />
+                      </div>
+                    </div>
+                    {/* Accent corner */}
+                    <div className="absolute top-0 left-0 w-12 h-12 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute top-0 left-0 w-full h-[2px] bg-[#F25835]" />
+                      <div className="absolute top-0 left-0 h-full w-[2px] bg-[#F25835]" />
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Info */}
