@@ -164,6 +164,9 @@ export function MusicPlayer() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isSeeking, setIsSeeking] = useState(false);
+  const [hoverTime, setHoverTime] = useState<number | null>(null);
+  const [hoverPosition, setHoverPosition] = useState<number>(0);
+  const [isHoveringProgress, setIsHoveringProgress] = useState(false);
   const [isApiReady, setIsApiReady] = useState(false);
   const [hiddenPlayerReady, setHiddenPlayerReady] = useState(false);
   const [visiblePlayerReady, setVisiblePlayerReady] = useState(false);
@@ -488,6 +491,25 @@ export function MusicPlayer() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  // Handle progress bar hover to show time tooltip
+  const handleProgressHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!duration || duration <= 0) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const hoverX = e.clientX - rect.left;
+    const percentage = Math.max(0, Math.min(1, hoverX / rect.width));
+    const timeAtHover = percentage * duration;
+    
+    setHoverTime(timeAtHover);
+    setHoverPosition(hoverX);
+    setIsHoveringProgress(true);
+  };
+
+  const handleProgressLeave = () => {
+    setIsHoveringProgress(false);
+    setHoverTime(null);
+  };
+
   // Handle progress bar click (seek)
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!duration || duration <= 0) return;
@@ -692,11 +714,31 @@ export function MusicPlayer() {
             <div 
               className="h-1 bg-white/10 cursor-pointer group relative"
               onClick={handleProgressClick}
+              onMouseMove={handleProgressHover}
+              onMouseLeave={handleProgressLeave}
             >
               <div 
                 className="h-full bg-[#F25835] transition-all duration-300 group-hover:bg-[#ff6b4a]"
                 style={{ width: duration > 0 ? `${Math.min(100, (currentTime / duration) * 100)}%` : '0%' }}
               />
+              {/* Tooltip showing time on hover */}
+              {isHoveringProgress && hoverTime !== null && (
+                <div
+                  className="absolute bottom-full mb-2 pointer-events-none z-50"
+                  style={{
+                    left: `${hoverPosition}px`,
+                    transform: 'translateX(-50%)',
+                  }}
+                >
+                  <div className="bg-[#0a0a0a] border border-white/20 rounded px-2 py-1 shadow-lg">
+                    <span className="font-mono text-[9px] sm:text-[10px] text-white whitespace-nowrap">
+                      {formatTime(hoverTime)}
+                    </span>
+                  </div>
+                  {/* Arrow pointing down */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white/20" />
+                </div>
+              )}
             </div>
             {/* Time display */}
             <div className="flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8 pt-1">
