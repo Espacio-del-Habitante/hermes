@@ -31,51 +31,112 @@ export function NavigationJoystick({
   const [isCollapsed, setIsCollapsed] = useState(false) // Start expanded by default
   const [position, setPosition] = useState(() => {
     if (typeof window !== 'undefined') {
-      // Position in bottom-right, accounting for small screens
-      const width = 128 // expanded size (default)
-      const padding = 16
-      return { 
-        x: Math.max(padding, window.innerWidth - width - padding), 
-        y: Math.max(padding, window.innerHeight - width - padding - 80) // Account for music player
-      }
+      return getDefaultJoystickPosition(false, 128)
     }
     return { x: 0, y: 0 }
   })
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [isMounted, setIsMounted] = useState(false)
+  const [hintDismissed, setHintDismissed] = useState(false)
+  const [expandAnimationDone, setExpandAnimationDone] = useState(false)
+  const [isPointerDown, setIsPointerDown] = useState(false)
   const joystickRef = useRef<HTMLDivElement>(null)
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
+  const expandButtonPressedRef = useRef(false)
+  const DRAG_THRESHOLD_PX = 8
 
-  // Initialize position from localStorage if available
+  // Posición por defecto: centro-derecha de la pantalla, bien visible y sin tapar el contenido principal
+  function getDefaultJoystickPosition(collapsed: boolean, widthHint?: number) {
+    if (typeof window === 'undefined') return { x: 0, y: 0 }
+    const isMobile = window.innerWidth < 768
+    const width = widthHint ?? (collapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128))
+    const padding = isMobile ? 8 : 16
+    const headerHeight = 80
+    const musicPlayerHeight = 80
+    const usableHeight = window.innerHeight - headerHeight - musicPlayerHeight
+    const yCentered = headerHeight + Math.max(0, (usableHeight - width) / 2)
+    return {
+      x: Math.max(padding, window.innerWidth - width - padding),
+      y: Math.max(headerHeight + padding, Math.min(yCentered, window.innerHeight - width - musicPlayerHeight - padding)),
+    }
+  }
+
+  const resetToDefaultPosition = useCallback(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    const defaultPos = getDefaultJoystickPosition(isCollapsed, width)
+    setPosition(defaultPos)
+    localStorage.setItem('joystick-position', JSON.stringify(defaultPos))
+  }, [isCollapsed])
+
+  // Tecla "J" para volver el joystick a la posición por defecto (centro-derecha)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'j' || e.key === 'J') {
+        resetToDefaultPosition()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [resetToDefaultPosition])
+
+  // Leer si el usuario ya vio la miniguía (ocultar después del primer uso)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHintDismissed(localStorage.getItem('joystick-hint-seen') === 'true')
+    }
+  }, [])
+
+  // Animación tipo Transformers al abrir: los lados salen del centro
+  useEffect(() => {
+    if (isCollapsed) {
+      setExpandAnimationDone(false)
+    } else {
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setExpandAnimationDone(true))
+      })
+      return () => cancelAnimationFrame(raf)
+    }
+  }, [isCollapsed])
+
+  // Initialize position: default for everyone, or validated saved position only if still visible
   useEffect(() => {
     setIsMounted(true)
     
     const updatePosition = () => {
       const savedPosition = localStorage.getItem('joystick-position')
       const savedCollapsed = localStorage.getItem('joystick-collapsed')
+      const isMobile = window.innerWidth < 768
+      const padding = isMobile ? 8 : 16
+      const musicPlayerHeight = 80
+      const defaultPos = getDefaultJoystickPosition(savedCollapsed === 'true', savedCollapsed === 'true' ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128))
       
       if (savedPosition) {
         try {
           const { x, y } = JSON.parse(savedPosition)
-          // Use saved collapsed state to determine width
           const savedIsCollapsed = savedCollapsed === 'true'
-          const isMobile = window.innerWidth < 768
           const width = savedIsCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-          const padding = isMobile ? 8 : 16
-          const musicPlayerHeight = 80
           const maxX = Math.max(padding, window.innerWidth - width - padding)
           const maxY = Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
           
-          // Adjust position to maintain corner when size changes
+          // Si la posición guardada está fuera de la pantalla visible, usar siempre la por defecto
+          const isOutsideViewport = x < padding || x > maxX || y < padding || y > maxY
+          if (isOutsideViewport) {
+            setPosition(defaultPos)
+            localStorage.setItem('joystick-position', JSON.stringify(defaultPos))
+            if (savedCollapsed === 'true') setIsCollapsed(true)
+            return
+          }
+          
           let adjustedX = Math.max(padding, Math.min(x, maxX))
           let adjustedY = Math.max(padding, Math.min(y, maxY))
           
-          // Snap to nearest corner
           const corners = [
             { x: padding, y: padding },
-            { x: Math.max(padding, window.innerWidth - width - padding), y: padding },
-            { x: padding, y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight) },
-            { x: Math.max(padding, window.innerWidth - width - padding), y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight) },
+            { x: maxX, y: padding },
+            { x: padding, y: maxY },
+            { x: maxX, y: maxY },
           ]
           
           let nearestCorner = corners[0]
@@ -89,7 +150,6 @@ export function NavigationJoystick({
             }
           }
           
-          // Snap if close to corner
           if (minDistance < 50) {
             adjustedX = nearestCorner.x
             adjustedY = nearestCorner.y
@@ -97,26 +157,10 @@ export function NavigationJoystick({
           
           setPosition({ x: adjustedX, y: adjustedY })
         } catch {
-          // If parsing fails, use default
-          const isMobile = window.innerWidth < 768
-          const width = isMobile ? 96 : 128 // expanded by default
-          const padding = isMobile ? 8 : 16
-          const musicPlayerHeight = 80
-          setPosition({ 
-            x: Math.max(padding, window.innerWidth - width - padding), 
-            y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
-          })
+          setPosition(defaultPos)
         }
       } else {
-        // Default position: bottom right, expanded
-        const isMobile = window.innerWidth < 768
-        const width = isMobile ? 96 : 128
-        const padding = isMobile ? 8 : 16
-        const musicPlayerHeight = 80
-        setPosition({ 
-          x: Math.max(padding, window.innerWidth - width - padding), 
-          y: Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
-        })
+        setPosition(defaultPos)
       }
       
       if (savedCollapsed === 'true') {
@@ -126,23 +170,13 @@ export function NavigationJoystick({
     
     updatePosition()
     
-    // Handle window resize
     const handleResize = () => {
       setPosition((currentPos) => {
-        const savedPosition = localStorage.getItem('joystick-position')
-        const width = 48 // Use collapsed size for validation
-        const padding = 8
+        const isMobile = window.innerWidth < 768
+        const width = 48
+        const padding = isMobile ? 8 : 16
         const maxX = Math.max(padding, window.innerWidth - width - padding)
         const maxY = Math.max(padding, window.innerHeight - width - padding - 80)
-        
-        if (!savedPosition) {
-          return { 
-            x: maxX, 
-            y: maxY
-          }
-        }
-        
-        // Validate current position is still within bounds
         return {
           x: Math.max(padding, Math.min(currentPos.x, maxX)),
           y: Math.max(padding, Math.min(currentPos.y, maxY))
@@ -228,6 +262,14 @@ export function NavigationJoystick({
   }, [isCollapsed, isMounted])
 
   // Function to snap to nearest corner
+  const handleExpandWithHint = useCallback(() => {
+    if (!hintDismissed && typeof window !== 'undefined') {
+      localStorage.setItem('joystick-hint-seen', 'true')
+      setHintDismissed(true)
+    }
+    setIsCollapsed(false)
+  }, [hintDismissed])
+
   const snapToCorner = useCallback((x: number, y: number) => {
     if (typeof window === 'undefined') return { x, y }
     
@@ -275,80 +317,122 @@ export function NavigationJoystick({
   }, [isCollapsed])
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const cw = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    const ch = cw
+    const ew = isMobile ? 96 : 128
+    const eh = ew
+
+    if (pointerStartRef.current && !isDragging) {
+      const dx = e.clientX - pointerStartRef.current.x
+      const dy = e.clientY - pointerStartRef.current.y
+      if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD_PX) {
+        pointerStartRef.current = null
+        if (joystickRef.current) {
+          const rect = joystickRef.current.getBoundingClientRect()
+          setDragStart({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+        }
+        setIsDragging(true)
+      }
+    }
+
     if (isDragging && joystickRef.current && typeof window !== 'undefined') {
-      const isMobile = window.innerWidth < 768
-      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      
-      // Calculate new position based on center of joystick
-      const newX = e.clientX - dragStart.x
-      const newY = e.clientY - dragStart.y
-      
-      // Constrain to viewport bounds
       const padding = isMobile ? 8 : 16
       const musicPlayerHeight = 80
-      const maxX = window.innerWidth - width - padding
-      const maxY = window.innerHeight - height - padding - musicPlayerHeight
-      
-      const constrainedX = Math.max(padding, Math.min(newX, maxX))
-      const constrainedY = Math.max(padding, Math.min(newY, maxY))
-      
-      setPosition({
-        x: constrainedX,
-        y: constrainedY,
-      })
+      const newLeft = e.clientX - dragStart.x
+      const newTop = e.clientY - dragStart.y
+
+      if (isCollapsed) {
+        const maxX = window.innerWidth - cw - padding
+        const maxY = window.innerHeight - ch - padding - musicPlayerHeight
+        setPosition({
+          x: Math.max(padding, Math.min(newLeft, maxX)),
+          y: Math.max(padding, Math.min(newTop, maxY)),
+        })
+      } else {
+        const maxEx = window.innerWidth - ew - padding
+        const maxEy = window.innerHeight - eh - padding - musicPlayerHeight
+        const constrainedEx = Math.max(padding, Math.min(newLeft, maxEx))
+        const constrainedEy = Math.max(padding, Math.min(newTop, maxEy))
+        setPosition({
+          x: constrainedEx + ew / 2 - cw / 2,
+          y: constrainedEy + eh / 2 - ch / 2,
+        })
+      }
     }
   }, [isDragging, dragStart, isCollapsed])
 
   const handleMouseUp = useCallback(() => {
+    setIsPointerDown(false)
     if (isDragging) {
       setIsDragging(false)
-      // Snap to nearest corner when released
-      setPosition((currentPos) => {
-        const snapped = snapToCorner(currentPos.x, currentPos.y)
-        return snapped
-      })
+      setPosition((currentPos) => snapToCorner(currentPos.x, currentPos.y))
+    } else if (pointerStartRef.current && expandButtonPressedRef.current && isCollapsed) {
+      handleExpandWithHint()
     }
-  }, [isDragging, snapToCorner])
+    pointerStartRef.current = null
+  }, [isDragging, snapToCorner, isCollapsed, handleExpandWithHint])
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
+    const touch = e.touches[0]
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const cw = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    const ch = cw
+    const ew = isMobile ? 96 : 128
+    const eh = ew
+
+    if (pointerStartRef.current && !isDragging) {
+      const dx = touch.clientX - pointerStartRef.current.x
+      const dy = touch.clientY - pointerStartRef.current.y
+      if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD_PX) {
+        pointerStartRef.current = null
+        if (joystickRef.current) {
+          const rect = joystickRef.current.getBoundingClientRect()
+          setDragStart({ x: touch.clientX - rect.left, y: touch.clientY - rect.top })
+        }
+        setIsDragging(true)
+      }
+    }
+
     if (isDragging && joystickRef.current && typeof window !== 'undefined') {
-      const touch = e.touches[0]
-      const isMobile = window.innerWidth < 768
-      const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      
-      const newX = touch.clientX - dragStart.x
-      const newY = touch.clientY - dragStart.y
-      
       const padding = isMobile ? 8 : 16
       const musicPlayerHeight = 80
-      const maxX = window.innerWidth - width - padding
-      const maxY = window.innerHeight - height - padding - musicPlayerHeight
-      
-      const constrainedX = Math.max(padding, Math.min(newX, maxX))
-      const constrainedY = Math.max(padding, Math.min(newY, maxY))
-      
-      setPosition({
-        x: constrainedX,
-        y: constrainedY,
-      })
+      const newLeft = touch.clientX - dragStart.x
+      const newTop = touch.clientY - dragStart.y
+
+      if (isCollapsed) {
+        const maxX = window.innerWidth - cw - padding
+        const maxY = window.innerHeight - ch - padding - musicPlayerHeight
+        setPosition({
+          x: Math.max(padding, Math.min(newLeft, maxX)),
+          y: Math.max(padding, Math.min(newTop, maxY)),
+        })
+      } else {
+        const maxEx = window.innerWidth - ew - padding
+        const maxEy = window.innerHeight - eh - padding - musicPlayerHeight
+        const constrainedEx = Math.max(padding, Math.min(newLeft, maxEx))
+        const constrainedEy = Math.max(padding, Math.min(newTop, maxEy))
+        setPosition({
+          x: constrainedEx + ew / 2 - cw / 2,
+          y: constrainedEy + eh / 2 - ch / 2,
+        })
+      }
     }
   }, [isDragging, dragStart, isCollapsed])
 
   const handleTouchEnd = useCallback(() => {
+    setIsPointerDown(false)
     if (isDragging) {
       setIsDragging(false)
-      // Snap to nearest corner when released
-      setPosition((currentPos) => {
-        const snapped = snapToCorner(currentPos.x, currentPos.y)
-        return snapped
-      })
+      setPosition((currentPos) => snapToCorner(currentPos.x, currentPos.y))
+    } else if (pointerStartRef.current && expandButtonPressedRef.current && isCollapsed) {
+      handleExpandWithHint()
     }
-  }, [isDragging, snapToCorner])
+    pointerStartRef.current = null
+  }, [isDragging, snapToCorner, isCollapsed, handleExpandWithHint])
 
   useEffect(() => {
-    if (isDragging) {
+    if (isPointerDown) {
       window.addEventListener('mousemove', handleMouseMove)
       window.addEventListener('mouseup', handleMouseUp)
       return () => {
@@ -356,10 +440,10 @@ export function NavigationJoystick({
         window.removeEventListener('mouseup', handleMouseUp)
       }
     }
-  }, [isDragging, handleMouseMove, handleMouseUp])
+  }, [isPointerDown, handleMouseMove, handleMouseUp])
 
   useEffect(() => {
-    if (isDragging) {
+    if (isPointerDown) {
       window.addEventListener('touchmove', handleTouchMove)
       window.addEventListener('touchend', handleTouchEnd)
       return () => {
@@ -367,77 +451,60 @@ export function NavigationJoystick({
         window.removeEventListener('touchend', handleTouchEnd)
       }
     }
-  }, [isDragging, handleTouchMove, handleTouchEnd])
+  }, [isPointerDown, handleTouchMove, handleTouchEnd])
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Allow dragging from anywhere except navigation buttons
     const target = e.target as HTMLElement
     const button = target.closest('button')
-    
-    // Only prevent dragging if clicking directly on a navigation button
-    // Allow dragging from the container and background elements
-    if (button) {
-      const ariaLabel = button.getAttribute('aria-label') || ''
-      // Only prevent if it's a navigation button, not collapse/expand
-      if (ariaLabel.includes('Navigate')) {
-        return
-      }
-      // For collapse/expand buttons, allow dragging if clicking on the container around them
-      if ((ariaLabel.includes('Collapse') || ariaLabel.includes('Expand')) && 
-          target === button) {
-        return
-      }
-    }
-    
-    // Prevent default to avoid text selection
+    const isExpandButton = isCollapsed && button?.getAttribute('aria-label')?.includes('Abrir joystick')
+    const isCollapseButton = !isCollapsed && button?.getAttribute('aria-label')?.includes('Collapse')
+    const isNavButton = button?.getAttribute('aria-label')?.includes('Navigate')
+
+    if (isNavButton) return
+    if (isCollapseButton) return // collapse se maneja con onClick
+
     e.preventDefault()
     e.stopPropagation()
-    
+    pointerStartRef.current = { x: e.clientX, y: e.clientY }
+    expandButtonPressedRef.current = !!isExpandButton
+    setIsPointerDown(true)
+
     if (joystickRef.current) {
       const rect = joystickRef.current.getBoundingClientRect()
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
       const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      
-      setIsDragging(true)
       setDragStart({
-        x: e.clientX - rect.left - width / 2,
-        y: e.clientY - rect.top - height / 2,
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
       })
     }
   }
 
-  // Touch support for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     const target = e.target as HTMLElement
     const button = target.closest('button')
-    
-    // Only prevent dragging if touching navigation buttons directly
-    if (button) {
-      const ariaLabel = button.getAttribute('aria-label') || ''
-      if (ariaLabel.includes('Navigate')) {
-        return
-      }
-      // For collapse/expand buttons, allow dragging if touching the container around them
-      if ((ariaLabel.includes('Collapse') || ariaLabel.includes('Expand')) && 
-          target === button) {
-        return
-      }
-    }
-    
+    const isExpandButton = isCollapsed && button?.getAttribute('aria-label')?.includes('Abrir joystick')
+    const isCollapseButton = !isCollapsed && button?.getAttribute('aria-label')?.includes('Collapse')
+    const isNavButton = button?.getAttribute('aria-label')?.includes('Navigate')
+
+    if (isNavButton) return
+    if (isCollapseButton) return
+
     e.stopPropagation()
-    
     const touch = e.touches[0]
+    pointerStartRef.current = { x: touch.clientX, y: touch.clientY }
+    expandButtonPressedRef.current = !!isExpandButton
+    setIsPointerDown(true)
+
     if (joystickRef.current) {
       const rect = joystickRef.current.getBoundingClientRect()
       const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
       const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
       const height = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-      
-      setIsDragging(true)
       setDragStart({
-        x: touch.clientX - rect.left - width / 2,
-        y: touch.clientY - rect.top - height / 2,
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
       })
     }
   }
@@ -459,46 +526,67 @@ export function NavigationJoystick({
         }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        title="Toca para abrir y navegar. Arrastra para mover. Presiona J para reposicionar."
       >
-        <div className="relative w-10 h-10 md:w-12 md:h-12">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setIsCollapsed(false)
-            }}
-            className="absolute inset-0 flex items-center justify-center text-white transition-all active:text-white/80 md:hover:text-white/80 rounded-full pointer-events-auto z-10 touch-manipulation bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg"
-            aria-label="Expand joystick"
+        {/* Miniguía: a la izquierda del botón, no afecta la posición del círculo */}
+        {!hintDismissed && (
+          <div
+            className="absolute right-full top-1/2 -translate-y-1/2 mr-2 px-2.5 py-1.5 rounded-md bg-[#0a0a0a]/95 border border-[#F25835]/60 text-[#F25835] font-mono text-[10px] md:text-xs tracking-wider uppercase shadow-xl whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-300"
+            style={{ maxWidth: '160px' }}
           >
-            <ChevronUp className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="font-semibold">Navega aquí</span>
+            <span className="text-white/80 font-normal"> — Toca para abrir</span>
+          </div>
+        )}
+        <div className="relative w-10 h-10 md:w-12 md:h-12">
+          {/* Botón sólido: abrir se detecta en mouseup/touchend si no hubo arrastre */}
+          <button
+            type="button"
+            className="absolute inset-0 flex items-center justify-center rounded-full pointer-events-auto z-10 touch-manipulation bg-[#F25835] text-[#0a0a0a] border-2 border-[#d94a2a] shadow-lg shadow-[#F25835]/40 ring-2 ring-[#F25835]/30 transition-all active:scale-95 active:shadow-md md:hover:scale-105 md:hover:shadow-xl md:hover:shadow-[#F25835]/50"
+            aria-label="Abrir joystick para navegar"
+          >
+            <ChevronUp className="h-4 w-4 md:h-5 md:w-5 stroke-[2.5]" />
           </button>
-          {/* Invisible drag area around button */}
           <div className="absolute inset-0 -m-2 cursor-move" />
         </div>
       </div>
     )
   }
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const collapsedSize = isMobile ? 40 : 48
+  const expandedSize = isMobile ? 96 : 128
+  const expandedLeft = position.x + collapsedSize / 2 - expandedSize / 2
+  const expandedTop = position.y + collapsedSize / 2 - expandedSize / 2
+
   return (
     <div
       ref={joystickRef}
       className="fixed z-[85] cursor-move select-none pointer-events-auto touch-none"
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
+        left: `${expandedLeft}px`,
+        top: `${expandedTop}px`,
         transition: isDragging ? 'none' : 'left 0.3s ease-out, top 0.3s ease-out',
         willChange: isDragging ? 'transform' : 'auto',
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
+      title="Arrastra para mover. Presiona J para volver a la posición por defecto."
     >
-      <div className="relative">
+      <div
+        className="relative origin-center transition-transform duration-300 ease-out"
+        style={{
+          transform: expandAnimationDone ? 'scale(1)' : 'scale(0)',
+          transitionTimingFunction: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
         {/* Cross-shaped joystick (D-pad) - responsive sizing */}
         <div className="relative w-24 h-24 md:w-32 md:h-32">
-          {/* Connecting cross background */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border border-white/10 bg-white/5 backdrop-blur-sm shadow-lg" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-l border-r border-white/10" />
+          {/* Connecting cross background - verde menta (zapotico) para destacar en B/N */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border border-[#F25835]/30 bg-[#F25835]/10 backdrop-blur-sm shadow-lg shadow-[#F25835]/10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-l border-r border-[#F25835]/30" />
           {showVertical && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-t border-b border-white/10" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 border-t border-b border-[#F25835]/30" />
           )}
 
           {/* Center button - collapse */}
@@ -507,7 +595,7 @@ export function NavigationJoystick({
               e.stopPropagation()
               setIsCollapsed(true)
             }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center border border-white/20 bg-white/10 backdrop-blur-sm text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] rounded-full touch-manipulation"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex h-7 w-7 md:h-8 md:w-8 items-center justify-center border border-[#F25835]/50 bg-[#F25835]/15 backdrop-blur-sm text-[#F25835] transition-all active:bg-[#F25835] active:text-[#0a0a0a] md:hover:bg-[#F25835] md:hover:text-[#0a0a0a] rounded-full touch-manipulation"
             aria-label="Collapse joystick"
           >
             <ChevronDown className="h-2.5 w-2.5 md:h-3 md:w-3" />
@@ -518,14 +606,13 @@ export function NavigationJoystick({
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                // Start music on first interaction
                 if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
                   (window as any).startMusicPlayer()
                 }
                 onNavigateUp()
               }}
               disabled={!canNavigateUp || isTransitioning}
-              className="absolute top-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
+              className="absolute top-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-[#F25835]/50 bg-transparent text-[#F25835] transition-all active:bg-[#F25835] active:text-[#0a0a0a] md:hover:bg-[#F25835] md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-[#F25835] disabled:cursor-not-allowed touch-manipulation"
               aria-label="Navigate up"
             >
               <ArrowUp className="h-4 w-4 md:h-5 md:w-5" />
@@ -537,14 +624,13 @@ export function NavigationJoystick({
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                // Start music on first interaction
                 if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
                   (window as any).startMusicPlayer()
                 }
                 onNavigateDown()
               }}
               disabled={!canNavigateDown || isTransitioning}
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation"
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-[#F25835]/50 bg-transparent text-[#F25835] transition-all active:bg-[#F25835] active:text-[#0a0a0a] md:hover:bg-[#F25835] md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-[#F25835] disabled:cursor-not-allowed touch-manipulation"
               aria-label="Navigate down"
             >
               <ArrowDown className="h-4 w-4 md:h-5 md:w-5" />
@@ -555,14 +641,13 @@ export function NavigationJoystick({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              // Start music on first interaction
               if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
                 (window as any).startMusicPlayer()
               }
               onNavigateLeft()
             }}
             disabled={!canNavigateLeft || isTransitioning}
-            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-transparent text-white transition-all active:bg-white active:text-[#0a0a0a] md:hover:bg-white md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-white disabled:cursor-not-allowed touch-manipulation shadow-md"
+            className="absolute top-1/2 left-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-[#F25835]/50 bg-transparent text-[#F25835] transition-all active:bg-[#F25835] active:text-[#0a0a0a] md:hover:bg-[#F25835] md:hover:text-[#0a0a0a] disabled:opacity-20 disabled:active:bg-transparent disabled:active:text-[#F25835] disabled:cursor-not-allowed touch-manipulation shadow-md shadow-[#F25835]/10"
             aria-label="Navigate left"
           >
             <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
@@ -572,14 +657,13 @@ export function NavigationJoystick({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              // Start music on first interaction
               if (typeof window !== 'undefined' && (window as any).startMusicPlayer) {
                 (window as any).startMusicPlayer()
               }
               onNavigateRight()
             }}
             disabled={!canNavigateRight || isTransitioning}
-            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-white/20 bg-white text-[#0a0a0a] transition-all active:bg-transparent active:text-white active:border-white md:hover:bg-transparent md:hover:text-white md:hover:border-white disabled:opacity-20 disabled:active:bg-white disabled:active:text-[#0a0a0a] touch-manipulation shadow-lg"
+            className="absolute top-1/2 right-0 -translate-y-1/2 flex h-10 w-10 md:h-12 md:w-12 items-center justify-center border border-[#F25835]/50 bg-[#F25835] text-[#0a0a0a] transition-all active:bg-transparent active:text-[#F25835] active:border-[#F25835] md:hover:bg-transparent md:hover:text-[#F25835] md:hover:border-[#F25835] disabled:opacity-20 disabled:active:bg-[#F25835] disabled:active:text-[#0a0a0a] touch-manipulation shadow-lg shadow-[#F25835]/20"
             aria-label="Navigate right"
           >
             <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
