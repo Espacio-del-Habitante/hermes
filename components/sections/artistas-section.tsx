@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { useState } from "react"
-import { getArtistImageUrl, ARTISTS } from "@/lib/supabase-urls"
+import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import type { GalleryRoomId } from "@/lib/gallery-map"
 
 interface ArtistasSectionProps {
@@ -10,22 +10,7 @@ interface ArtistasSectionProps {
   onNavigateToArtist?: (artistId: GalleryRoomId) => void
 }
 
-const artistas = [
-  { 
-    id: "grioth" as const, 
-    name: ARTISTS.grioth.name, 
-    role: "Artista",
-    imageUrl: getArtistImageUrl("grioth", 1),
-    description: "Rapero y compositor del Valle del Cauca"
-  },
-  { 
-    id: "kiro" as const, 
-    name: ARTISTS.kiro.name, 
-    role: "Artista",
-    imageUrl: getArtistImageUrl("kiro", 1),
-    description: "Rapero y compositor del Valle del Cauca"
-  },
-]
+const ARTIST_IDS: ArtistRoomId[] = ["grioth", "kiro", "arenas", "apolo", "manucho", "bambuco-loco"]
 
 export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectionProps) {
   const [hoveredArtist, setHoveredArtist] = useState<string | null>(null)
@@ -48,79 +33,86 @@ export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectio
         </div>
 
         {/* Artists grid */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl">
-          {artistas.map((artista, index) => (
-            <div
-              key={artista.id}
-              className={`group relative cursor-pointer transition-all duration-700 ${
-                isActive 
-                  ? "opacity-100 translate-y-0" 
-                  : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: `${200 + index * 100}ms` }}
-              onMouseEnter={() => setHoveredArtist(artista.id)}
-              onMouseLeave={() => setHoveredArtist(null)}
-              onClick={() => onNavigateToArtist?.(artista.id)}
-            >
-              {/* Image container */}
-              <div className="relative aspect-square overflow-hidden bg-[#1a1a1a]">
-                <Image
-                  src={artista.imageUrl}
-                  alt={artista.name}
-                  fill
-                  className={`object-cover transition-all duration-500 ${
-                    hoveredArtist === artista.id 
-                      ? "scale-105" 
-                      : "scale-100"
-                  }`}
-                  unoptimized
-                />
-                {/* Overlay */}
-                <div 
-                  className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
-                    hoveredArtist === artista.id ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-                
-                {/* Accent corner */}
-                <div className="absolute top-0 right-0 w-12 h-12">
-                  <div 
-                    className={`absolute top-0 right-0 w-full h-[2px] transition-all duration-300 ${
-                      hoveredArtist === artista.id 
-                        ? "bg-[#F25835] w-full" 
-                        : "bg-white/20 w-6"
-                    }`}
-                  />
-                  <div 
-                    className={`absolute top-0 right-0 h-full w-[2px] transition-all duration-300 ${
-                      hoveredArtist === artista.id 
-                        ? "bg-[#F25835] h-full" 
-                        : "bg-white/20 h-6"
-                    }`}
-                  />
-                </div>
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {ARTIST_IDS.map((id, index) => {
+            const artist = ARTISTS[id]
+            const isComingSoon = artist.imageCount === 0
+            return (
+              <div
+                key={id}
+                className={`group relative cursor-pointer transition-all duration-700 ${
+                  isActive 
+                    ? "opacity-100 translate-y-0" 
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${200 + index * 100}ms` }}
+                onMouseEnter={() => setHoveredArtist(id)}
+                onMouseLeave={() => setHoveredArtist(null)}
+                onClick={() => onNavigateToArtist?.(id)}
+              >
+                {isComingSoon ? (
+                  /* Placeholder estilo "Próximamente" */
+                  <div className="relative aspect-square overflow-hidden bg-[#1a1a1a] border border-white/10 flex items-center justify-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                      <h3 className="font-serif text-xl md:text-2xl text-white/90 group-hover:text-[#F25835] transition-colors">
+                        {artist.name}
+                      </h3>
+                      <p className="font-mono text-[10px] tracking-[0.2em] text-white/40 uppercase mt-3">
+                        Próximamente
+                      </p>
+                    </div>
+                    <div className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 border-white/10 group-hover:border-[#F25835] transition-colors" />
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative aspect-square overflow-hidden bg-[#1a1a1a]">
+                      <Image
+                        src={getArtistImageUrl(id, 1)}
+                        alt={artist.name}
+                        fill
+                        className={`object-cover transition-all duration-500 ${
+                          hoveredArtist === id ? "scale-105" : "scale-100"
+                        }`}
+                        unoptimized
+                      />
+                      <div 
+                        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent transition-opacity duration-300 ${
+                          hoveredArtist === id ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                      <div className="absolute top-0 right-0 w-12 h-12">
+                        <div 
+                          className={`absolute top-0 right-0 w-full h-[2px] transition-all duration-300 ${
+                            hoveredArtist === id ? "bg-[#F25835] w-full" : "bg-white/20 w-6"
+                          }`}
+                        />
+                        <div 
+                          className={`absolute top-0 right-0 h-full w-[2px] transition-all duration-300 ${
+                            hoveredArtist === id ? "bg-[#F25835] h-full" : "bg-white/20 h-6"
+                          }`}
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <p className="font-mono text-[10px] tracking-[0.2em] text-[#F25835] uppercase mb-1">
+                        Artista
+                      </p>
+                      <h3 className="font-serif text-2xl text-white group-hover:text-[#F25835] transition-colors">
+                        {artist.name}
+                      </h3>
+                      <p 
+                        className={`font-mono text-xs text-white/50 mt-2 transition-all duration-300 ${
+                          hoveredArtist === id ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
+                        }`}
+                      >
+                        Rapero y compositor del Valle del Cauca
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
-
-              {/* Info */}
-              <div className="mt-4">
-                <p className="font-mono text-[10px] tracking-[0.2em] text-[#F25835] uppercase mb-1">
-                  {artista.role}
-                </p>
-                <h3 className="font-serif text-2xl text-white group-hover:text-[#F25835] transition-colors">
-                  {artista.name}
-                </h3>
-                <p 
-                  className={`font-mono text-xs text-white/50 mt-2 transition-all duration-300 ${
-                    hoveredArtist === artista.id 
-                      ? "opacity-100 translate-y-0" 
-                      : "opacity-0 -translate-y-2"
-                  }`}
-                >
-                  {artista.description}
-                </p>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Decorative element */}

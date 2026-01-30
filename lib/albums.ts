@@ -72,11 +72,14 @@ export function getCollaborationAlbums(): Album[] {
   return ALBUMS.filter((a) => a.artistSlug === "grioth-kiro")
 }
 
-/** Para una sala de artista: sus álbumes individuales + colaboraciones */
-export function getAlbumsForArtist(artistId: "grioth" | "kiro"): {
+/** Para una sala de artista: sus álbumes individuales + colaboraciones. Artistas sin álbumes devuelven listas vacías. */
+export function getAlbumsForArtist(artistId: string): {
   individual: Album[]
   collaborations: Album[]
 } {
+  if (artistId !== "grioth" && artistId !== "kiro") {
+    return { individual: [], collaborations: [] }
+  }
   const individual = ALBUMS.filter((a) => a.artistSlug === artistId)
   const collaborations = getCollaborationAlbums()
   return { individual, collaborations }

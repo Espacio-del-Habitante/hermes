@@ -26,7 +26,8 @@ export function getGalleryVideoUrl(videoNumber: number): string {
 }
 
 /**
- * Información de artistas disponibles
+ * Información de artistas disponibles.
+ * imageCount: 0 = artista "próximamente" (sin fotos ni contenido aún).
  */
 export const ARTISTS = {
   grioth: {
@@ -39,7 +40,29 @@ export const ARTISTS = {
     name: "Kiro",
     imageCount: 16,
   },
+  arenas: {
+    slug: "arenas",
+    name: "Arenas",
+    imageCount: 0,
+  },
+  apolo: {
+    slug: "apolo",
+    name: "Apolo",
+    imageCount: 0,
+  },
+  manucho: {
+    slug: "manucho",
+    name: "Manucho",
+    imageCount: 0,
+  },
+  "bambuco-loco": {
+    slug: "bambuco-loco",
+    name: "Bambuco-Loco",
+    imageCount: 0,
+  },
 } as const
+
+export type ArtistRoomId = keyof typeof ARTISTS
 
 /**
  * Información de galería (conjunta)

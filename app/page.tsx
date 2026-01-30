@@ -203,7 +203,7 @@ export default function Home() {
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
           </div>
-          {/* Fila 2: Salas individuales de artistas */}
+          {/* Fila 2: Salas individuales de artistas (grioth, kiro, arenas, apolo) */}
           <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <ArtistRoomSection 
@@ -217,6 +217,41 @@ export default function Home() {
               <ArtistRoomSection 
                 isActive={currentRoom === "kiro"} 
                 artistId="kiro"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "arenas"} 
+                artistId="arenas"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "apolo"} 
+                artistId="apolo"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+          </div>
+          {/* Fila 3: Salas individuales de artistas (manucho, bambuco-loco) */}
+          <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "manucho"} 
+                artistId="manucho"
+                onNavigateBack={() => navigateToRoom("artistas")}
+                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+              />
+            </div>
+            <div className="w-screen flex-shrink-0 h-full overflow-hidden">
+              <ArtistRoomSection 
+                isActive={currentRoom === "bambuco-loco"} 
+                artistId="bambuco-loco"
                 onNavigateBack={() => navigateToRoom("artistas")}
                 onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
               />

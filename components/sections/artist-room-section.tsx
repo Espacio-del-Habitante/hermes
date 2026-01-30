@@ -2,10 +2,24 @@
 
 import Image from "next/image"
 import { useState, useMemo } from "react"
-import { getArtistImageUrl, ARTISTS } from "@/lib/supabase-urls"
+import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import { getAlbumsForArtist, type Album } from "@/lib/albums"
 import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
 import { ArrowLeft } from "lucide-react"
+
+/** Placeholder "Próximamente" como en Contenido Extra (dos bloques oscuros). */
+function ProximamentePlaceholder() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
+        <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
+      </div>
+      <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
+        <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
+      </div>
+    </div>
+  )
+}
 
 function AlbumCard({
   album,
@@ -55,7 +69,7 @@ function AlbumCard({
 
 interface ArtistRoomSectionProps {
   isActive: boolean
-  artistId: "grioth" | "kiro"
+  artistId: ArtistRoomId
   onNavigateBack: () => void
   /** Al hacer clic en un álbum, ir a la sección Álbumes con este álbum seleccionado. */
   onNavigateToAlbum?: (albumId: number) => void
@@ -67,6 +81,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
   const [activeSection, setActiveSection] = useState<Section>("albumes")
   const artist = ARTISTS[artistId]
   const { individual, collaborations } = getAlbumsForArtist(artistId)
+  const isComingSoon = artist.imageCount === 0
 
   const sections: { id: Section; label: string }[] = [
     { id: "albumes", label: "Álbumes / Música" },
@@ -158,6 +173,10 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                 Discografía y material musical de {artist.name}
               </p>
 
+              {isComingSoon ? (
+                <ProximamentePlaceholder />
+              ) : (
+                <>
               {/* Álbumes individuales */}
               {individual.length > 0 && (
                 <div className="mb-10">
@@ -203,6 +222,8 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                   <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
                 </div>
               )}
+                </>
+              )}
             </div>
           )}
 
@@ -215,7 +236,9 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-sm text-white/50 mb-6">
                 Proyectos en conjunto de {artist.name} con otros artistas
               </p>
-              {collaborations.length > 0 ? (
+              {isComingSoon ? (
+                <ProximamentePlaceholder />
+              ) : collaborations.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {collaborations.map((album, index) => (
                     <AlbumCard
@@ -244,6 +267,10 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-sm text-white/50 mb-6">
                 Registro fotográfico de {artist.name}
               </p>
+              {isComingSoon ? (
+                <ProximamentePlaceholder />
+              ) : (
+                <>
               <p className="font-mono text-[10px] text-white/30 uppercase mb-4">
                 Clic en una foto para ampliar · Flechas para navegar
               </p>
@@ -283,6 +310,8 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                 onSelectIndex={setSelectedPhotoIndexFotografias}
                 unoptimized
               />
+                </>
+              )}
             </div>
           )}
 
@@ -295,6 +324,10 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-sm text-white/50 mb-6">
                 Portadas y contenido visual de {artist.name}
               </p>
+              {isComingSoon ? (
+                <ProximamentePlaceholder />
+              ) : (
+                <>
               <p className="font-mono text-[10px] text-white/30 uppercase mb-4">
                 Clic en una imagen para ampliar · Flechas para navegar
               </p>
@@ -329,6 +362,8 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                 onSelectIndex={setSelectedPhotoIndexArteVisual}
                 unoptimized
               />
+                </>
+              )}
             </div>
           )}
 
@@ -341,15 +376,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-sm text-white/50 mb-6">
                 Reseñas, entrevistas y contenido extra de {artist.name}
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Placeholder para contenido extra */}
-                <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
-                  <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
-                </div>
-                <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
-                  <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
-                </div>
-              </div>
+              <ProximamentePlaceholder />
             </div>
           )}
         </div>
