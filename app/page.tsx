@@ -157,10 +157,11 @@ export default function Home() {
               />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <LanzamientosSection
-                isActive={currentRoom === "lanzamientos"}
-                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
-              />
+                <LanzamientosSection
+                  isActive={currentRoom === "lanzamientos"}
+                  onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+                  onNavigateToAlbumes={() => navigateToRoom("albumes")}
+                />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
               <AlbumesSection
