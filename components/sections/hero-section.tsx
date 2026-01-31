@@ -37,73 +37,73 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
             </p>
           </div>
 
-          {/* Mobile Layout: Content positioned towards bottom like wireframe */}
-          <div className="lg:hidden flex flex-col flex-1 min-h-0 justify-end pb-4 sm:pb-6">
-            {/* Main title - Mobile: large, prominent */}
-            <div className="flex-shrink-0 mb-6 sm:mb-8">
-              <div className="relative">
-                <h1 
-                  className={`font-serif italic text-[22vw] sm:text-[20vw] leading-[0.9] text-white uppercase font-normal transition-all duration-700 delay-200 ${
-                    isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-                  }`}
+          {/* Mobile Layout: título arriba (menos negro), imagen y resto abajo */}
+          <div className="lg:hidden flex flex-col flex-1 min-h-0 pt-0.5 sm:pt-1 pb-4 sm:pb-6">
+            {/* Título arriba */}
+            <div className="flex-shrink-0 mb-2 sm:mb-3">
+              <h1 
+                className={`font-serif italic text-[22vw] sm:text-[20vw] leading-[0.9] text-white uppercase font-normal transition-all duration-700 delay-200 ${
+                  isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                }`}
+              >
+                <span className="block">La Galeria</span>
+              </h1>
+            </div>
+
+            {/* Resto: zona donde empieza la imagen + categorías y descripción */}
+            <div className="flex-1 min-h-0 flex flex-col justify-end">
+              {/* Categories - Mobile */}
+              <div 
+                className={`flex-shrink-0 flex flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-700 delay-300 ${
+                  isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
+              >
+                <button 
+                  onClick={() => onNavigateToRoom?.("videos")}
+                  className="group text-left touch-manipulation flex-1"
                 >
-                  <span className="block">La Galeria</span>
-                </h1>
-              
+                  <h3 className="font-bebas text-base sm:text-lg text-white mb-1 transition-colors group-active:text-[#F25835] uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
+                    Videos
+                  </h3>
+                  <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
+                    El Sonido del Futuro
+                  </p>
+                </button>
+                <button 
+                  onClick={() => onNavigateToRoom?.("film")}
+                  className="group text-left touch-manipulation flex-1"
+                >
+                  <h3 className="font-bebas text-base sm:text-lg text-white/40 mb-1 transition-colors group-active:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
+                    Film
+                  </h3>
+                  <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
+                    Bloopers & Detras de Camaras
+                  </p>
+                </button>
+                <button 
+                  onClick={() => onNavigateToRoom?.("photos")}
+                  className="group text-left touch-manipulation flex-1"
+                >
+                  <h3 className="font-bebas text-base sm:text-lg text-white/40 mb-1 transition-colors group-active:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
+                    Fotos
+                  </h3>
+                  <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
+                    Archivo Fotografico
+                  </p>
+                </button>
               </div>
-            </div>
 
-            {/* Categories - Mobile: in row below title */}
-            <div 
-              className={`flex-shrink-0 flex flex-row gap-3 sm:gap-4 mb-6 sm:mb-8 transition-all duration-700 delay-300 ${
-                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-            >
-              <button 
-                onClick={() => onNavigateToRoom?.("videos")}
-                className="group text-left touch-manipulation flex-1"
+              {/* Description - Mobile */}
+              <div 
+                className={`flex-shrink-0 mb-4 sm:mb-6 transition-all duration-700 delay-400 ${
+                  isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                }`}
               >
-                <h3 className="font-bebas text-base sm:text-lg text-white mb-1 transition-colors group-active:text-[#F25835] uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                  Videos
-                </h3>
-                <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
-                  El Sonido del Futuro
+                <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.1em] text-white/40 uppercase leading-relaxed">
+                  La galeria es un espacio dedicado a la elevacion de la
+                  cultura hip-hop de Cali como arte de museo.
                 </p>
-              </button>
-              <button 
-                onClick={() => onNavigateToRoom?.("film")}
-                className="group text-left touch-manipulation flex-1"
-              >
-                <h3 className="font-bebas text-base sm:text-lg text-white/40 mb-1 transition-colors group-active:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                  Film
-                </h3>
-                <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
-                  Bloopers & Detras de Camaras
-                </p>
-              </button>
-              <button 
-                onClick={() => onNavigateToRoom?.("photos")}
-                className="group text-left touch-manipulation flex-1"
-              >
-                <h3 className="font-bebas text-base sm:text-lg text-white/40 mb-1 transition-colors group-active:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                  Photos
-                </h3>
-                <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
-                  Archivo Fotografico
-                </p>
-              </button>
-            </div>
-
-            {/* Description - Mobile: below categories (info lema) */}
-            <div 
-              className={`flex-shrink-0 mb-4 sm:mb-6 transition-all duration-700 delay-400 ${
-                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-            >
-              <p className="font-mono text-[9px] sm:text-[10px] tracking-[0.1em] text-white/40 uppercase leading-relaxed">
-                La galeria es un espacio dedicado a la elevacion de la
-                cultura hip-hop de Cali como arte de museo.
-              </p>
+              </div>
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
                 className="group text-left touch-manipulation"
               >
                 <h3 className="font-bebas text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 transition-colors group-active:text-white md:group-hover:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                  Photos
+                  Fotos
                 </h3>
                 <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                   Archivo Fotografico
@@ -199,8 +199,8 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
         </div>
       </div>
 
-      {/* Mobile image - visible but darkened background */}
-      <div className="lg:hidden absolute inset-0 pointer-events-none z-0">
+      {/* Mobile image: empieza debajo del título para no tener tanto negro arriba */}
+      <div className="lg:hidden absolute top-[18%] left-0 right-0 bottom-0 pointer-events-none z-0">
         <Image
           src="/images/cuadro-removebg-preview.png"
           alt="Arte"

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { Lock, ArrowLeft } from "lucide-react"
 import { GalleryHeader } from "@/components/gallery-header"
 import { HeroSection } from "@/components/sections/hero-section"
 import { VideosSection } from "@/components/sections/videos-section"
@@ -22,8 +23,48 @@ import {
   GRID_COLUMNS,
   GRID_ROW_COUNT,
 } from "@/lib/gallery-map"
+import { ARTISTS } from "@/lib/supabase-urls"
 
 const CONTENT_HEIGHT = "calc(100vh - 64px - 56px)" // header + music player
+
+/** Pantalla mínima para artistas "Próximamente": candado + texto + volver (no se muestra su sala completa). */
+function ArtistComingSoonPlaceholder({
+  artistName,
+  isActive,
+  onNavigateBack,
+}: {
+  artistName: string
+  isActive: boolean
+  onNavigateBack: () => void
+}) {
+  return (
+    <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] flex flex-col items-center justify-center p-8">
+      <div
+        className={`flex flex-col items-center gap-6 text-center transition-all duration-700 ${
+          isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        <Lock className="w-20 h-20 md:w-24 md:h-24 text-white/30" strokeWidth={1.5} />
+        <div>
+          <p className="font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase">
+            {artistName}
+          </p>
+          <p className="font-mono text-sm md:text-base tracking-[0.2em] text-white/70 uppercase mt-2">
+            Próximamente
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onNavigateBack}
+          className="flex items-center gap-2 font-mono text-xs tracking-[0.15em] text-white/60 hover:text-white uppercase border border-white/20 px-4 py-2 rounded transition-colors mt-4"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Volver
+        </button>
+      </div>
+    </section>
+  )
+}
 
 export default function Home() {
   const [row, setRow] = useState(0)
@@ -157,39 +198,71 @@ export default function Home() {
               />
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <ArtistRoomSection 
-                isActive={currentRoom === "arenas"} 
-                artistId="arenas"
-                onNavigateBack={() => navigateToRoom("artistas")}
-                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
-              />
+              {ARTISTS.arenas.imageCount === 0 ? (
+                <ArtistComingSoonPlaceholder
+                  artistName={ARTISTS.arenas.name}
+                  isActive={currentRoom === "arenas"}
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                />
+              ) : (
+                <ArtistRoomSection 
+                  isActive={currentRoom === "arenas"} 
+                  artistId="arenas"
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                  onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+                />
+              )}
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <ArtistRoomSection 
-                isActive={currentRoom === "apolo"} 
-                artistId="apolo"
-                onNavigateBack={() => navigateToRoom("artistas")}
-                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
-              />
+              {ARTISTS.apolo.imageCount === 0 ? (
+                <ArtistComingSoonPlaceholder
+                  artistName={ARTISTS.apolo.name}
+                  isActive={currentRoom === "apolo"}
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                />
+              ) : (
+                <ArtistRoomSection 
+                  isActive={currentRoom === "apolo"} 
+                  artistId="apolo"
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                  onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+                />
+              )}
             </div>
           </div>
           {/* Fila 3: Salas individuales de artistas (manucho, bambuco-loco) */}
           <div className="flex flex-shrink-0 w-full" style={{ height: `${100 / GRID_ROW_COUNT}%` }}>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <ArtistRoomSection 
-                isActive={currentRoom === "manucho"} 
-                artistId="manucho"
-                onNavigateBack={() => navigateToRoom("artistas")}
-                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
-              />
+              {ARTISTS.manucho.imageCount === 0 ? (
+                <ArtistComingSoonPlaceholder
+                  artistName={ARTISTS.manucho.name}
+                  isActive={currentRoom === "manucho"}
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                />
+              ) : (
+                <ArtistRoomSection 
+                  isActive={currentRoom === "manucho"} 
+                  artistId="manucho"
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                  onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+                />
+              )}
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden">
-              <ArtistRoomSection 
-                isActive={currentRoom === "bambuco-loco"} 
-                artistId="bambuco-loco"
-                onNavigateBack={() => navigateToRoom("artistas")}
-                onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
-              />
+              {ARTISTS["bambuco-loco"].imageCount === 0 ? (
+                <ArtistComingSoonPlaceholder
+                  artistName={ARTISTS["bambuco-loco"].name}
+                  isActive={currentRoom === "bambuco-loco"}
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                />
+              ) : (
+                <ArtistRoomSection 
+                  isActive={currentRoom === "bambuco-loco"} 
+                  artistId="bambuco-loco"
+                  onNavigateBack={() => navigateToRoom("artistas")}
+                  onNavigateToAlbum={(albumId) => navigateToRoom("albumes", { albumId })}
+                />
+              )}
             </div>
             <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
             <div className="w-screen flex-shrink-0 h-full overflow-hidden bg-[#0a0a0a]" />
