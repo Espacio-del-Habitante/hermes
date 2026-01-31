@@ -34,31 +34,43 @@ export const ARTISTS = {
     slug: "grioth",
     name: "Grioth",
     imageCount: 7,
+    instagramUrl: "",
+    facebookUrl: "",
   },
   kiro: {
     slug: "kiro",
     name: "Kiro",
     imageCount: 16,
+    instagramUrl: "",
+    facebookUrl: "",
   },
   arenas: {
     slug: "arenas",
     name: "Arenas",
     imageCount: 0,
+    instagramUrl: "",
+    facebookUrl: "",
   },
   apolo: {
     slug: "apolo",
     name: "Apolo",
     imageCount: 0,
+    instagramUrl: "",
+    facebookUrl: "",
   },
   manucho: {
     slug: "manucho",
     name: "Manucho",
     imageCount: 0,
+    instagramUrl: "",
+    facebookUrl: "",
   },
   "bambuco-loco": {
     slug: "bambuco-loco",
     name: "Bambuco-Loco",
     imageCount: 0,
+    instagramUrl: "",
+    facebookUrl: "",
   },
 } as const
 

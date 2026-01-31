@@ -5,7 +5,7 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import { getAlbumsForArtist, type Album } from "@/lib/albums"
 import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
-import { ArrowLeft, Lock } from "lucide-react"
+import { ArrowLeft, Lock, Instagram, Facebook } from "lucide-react"
 
 /** Placeholder "Próximamente" — estilo candado bloqueado (como en artistas). */
 function ProximamentePlaceholder() {
@@ -94,6 +94,35 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
   const artist = ARTISTS[artistId]
   const { individual, collaborations } = getAlbumsForArtist(artistId)
   const isComingSoon = artist.imageCount === 0
+  const renderSocialLink = (
+    href: string | undefined,
+    label: string,
+    Icon: typeof Instagram,
+    sizeClassName: string,
+  ) => {
+    if (!href) {
+      return (
+        <span
+          aria-label={`${label} (pendiente)`}
+          className={`text-white/30 ${sizeClassName}`}
+        >
+          <Icon className="h-full w-full" />
+        </span>
+      )
+    }
+
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        className={`text-white/70 hover:text-white transition-colors ${sizeClassName}`}
+      >
+        <Icon className="h-full w-full" />
+      </a>
+    )
+  }
 
   const sections: { id: Section; label: string }[] = [
     { id: "albumes", label: "Álbumes / Música" },
@@ -199,11 +228,29 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                 Sala Individual
               </p>
             )}
-            <h2 className={`font-serif italic text-white transition-all ${
-              isScrolled ? 'text-xl' : 'text-3xl'
-            }`}>
-              {artist.name}
-            </h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2
+                className={`font-serif italic text-white transition-all ${
+                  isScrolled ? 'text-xl' : 'text-3xl'
+                }`}
+              >
+                {artist.name}
+              </h2>
+              <div className="flex items-center gap-3">
+                {renderSocialLink(
+                  artist.instagramUrl,
+                  `Instagram de ${artist.name}`,
+                  Instagram,
+                  "h-4 w-4",
+                )}
+                {renderSocialLink(
+                  artist.facebookUrl,
+                  `Facebook de ${artist.name}`,
+                  Facebook,
+                  "h-4 w-4",
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -224,9 +271,25 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
           <p className="font-mono text-xs tracking-[0.3em] text-[#F25835] uppercase mb-2">
             Sala Individual
           </p>
-          <h2 className="font-serif text-5xl md:text-7xl italic text-white">
-            {artist.name}
-          </h2>
+          <div className="flex items-center justify-between gap-6">
+            <h2 className="font-serif text-5xl md:text-7xl italic text-white">
+              {artist.name}
+            </h2>
+            <div className="flex items-center gap-4">
+              {renderSocialLink(
+                artist.instagramUrl,
+                `Instagram de ${artist.name}`,
+                Instagram,
+                "h-5 w-5",
+              )}
+              {renderSocialLink(
+                artist.facebookUrl,
+                `Facebook de ${artist.name}`,
+                Facebook,
+                "h-5 w-5",
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Navegación de secciones - Mobile: horizontal scroll, Desktop: normal */}

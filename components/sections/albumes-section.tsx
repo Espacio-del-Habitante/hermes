@@ -34,6 +34,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
   const [hoveredTrack, setHoveredTrack] = useState<number | null>(null)
   const [currentPlaylist, setCurrentPlaylist] = useState<typeof playlists[0] | null>(null)
   const [currentTrack, setCurrentTrack] = useState<typeof playlists[0]['tracks'][0] | null>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   // Get current playlist and track from music player
   useEffect(() => {
@@ -80,12 +81,33 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
     if (isActive && sectionScrollRef.current) sectionScrollRef.current.scrollTop = 0
   }, [isActive])
 
+  useEffect(() => {
+    const scrollContainer = sectionScrollRef.current
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop
+      setIsScrolled((prev) => {
+        if (scrollTop > 60) return true
+        if (scrollTop < 25) return false
+        return prev
+      })
+    }
+
+    scrollContainer.addEventListener("scroll", handleScroll, { passive: true })
+    return () => scrollContainer.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
       {/* Scrollable container for mobile */}
       <div ref={sectionScrollRef} className="h-full flex flex-col md:flex-row overflow-y-auto overflow-x-hidden md:overflow-hidden">
         {/* Left - Album artwork display */}
-        <div className="flex-shrink-0 md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center pt-8 pb-8 md:pt-12 md:pb-12 px-4 md:p-4 md:p-8 lg:p-12 md:min-h-0">
+        <div
+          className={`sticky top-0 z-10 flex-shrink-0 md:static md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center px-4 md:p-4 md:p-8 lg:p-12 md:min-h-0 transition-all duration-300 ${
+            isScrolled ? "pt-4 pb-4" : "pt-8 pb-8"
+          }`}
+        >
         {/* Background accent */}
         <div 
           className="absolute inset-0 opacity-5 transition-colors duration-700"
@@ -108,7 +130,11 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
           </div>
 
           {/* Album cover - smaller on mobile */}
-          <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80 z-10">
+          <div
+            className={`relative z-10 transition-all duration-300 ${
+              isScrolled ? "w-40 h-40 sm:w-48 sm:h-48" : "w-48 h-48 sm:w-56 sm:h-56"
+            } md:w-64 md:h-64 lg:w-80 lg:h-80`}
+          >
             <Image
               src={selectedAlbum.image || "/placeholder.svg"}
               alt={selectedAlbum.title}
@@ -125,9 +151,9 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
 
         {/* Album info - repositioned for mobile */}
         <div 
-          className={`absolute bottom-4 left-4 md:bottom-12 md:left-12 transition-all duration-700 delay-300 ${
+          className={`absolute left-4 md:left-12 transition-all duration-700 delay-300 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
+          } ${isScrolled ? "bottom-2" : "bottom-4"} md:bottom-12`}
         >
           <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-1 md:mb-2">
             {selectedAlbum.year} - {selectedAlbum.artist}
