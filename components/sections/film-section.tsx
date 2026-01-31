@@ -16,8 +16,19 @@ export function FilmSection({ isActive }: FilmSectionProps) {
 
   return (
     <section className="relative h-full w-full flex-shrink-0 flex overflow-hidden">
+      {/* Background image - Mobile only */}
+      <div className="md:hidden absolute inset-0 z-0 overflow-hidden">
+        <Image
+          src="/images/probando-la-sopa.png"
+          alt="Film background"
+          fill
+          className="object-cover grayscale opacity-20"
+        />
+        <div className="absolute inset-0 bg-[#0a0a0a]/80" />
+      </div>
+
       {/* Left - Title and info */}
-      <div ref={scrollRef} className="flex-1 bg-[#0a0a0a] flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden">
+      <div ref={scrollRef} className="relative z-10 flex-1 bg-[#0a0a0a] md:bg-[#0a0a0a] flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden pb-24 sm:pb-12 md:pb-8">
         <div 
           className={`transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -54,10 +65,30 @@ export function FilmSection({ isActive }: FilmSectionProps) {
             <Play className="w-4 h-4" />
             Ver Documental
           </button>
+
+          {/* Space for more documentaries - Mobile */}
+          <div className="md:hidden mt-12 space-y-8 pb-8">
+            <div className="opacity-50">
+              <h4 className="font-serif text-2xl text-white italic mb-3">
+                Próximamente
+              </h4>
+              <p className="font-mono text-sm text-white/40 leading-relaxed mb-4">
+                Más documentales y contenido exclusivo próximamente.
+              </p>
+            </div>
+            <div className="opacity-30">
+              <h4 className="font-serif text-2xl text-white italic mb-3">
+                Próximamente
+              </h4>
+              <p className="font-mono text-sm text-white/40 leading-relaxed">
+                Más documentales y contenido exclusivo próximamente.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Bottom hint */}
-        <div className="flex items-center justify-between">
+        <div className="shrink-0 flex items-center justify-between mt-6 md:mt-0">
           <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
             Scroll to continue exploring
           </p>
