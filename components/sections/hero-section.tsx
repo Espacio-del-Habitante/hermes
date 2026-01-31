@@ -81,7 +81,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
               className="group text-left touch-manipulation"
             >
               <h3 className="font-serif text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 italic transition-colors group-active:text-white md:group-hover:text-white">
-                Photos
+                Fotos
               </h3>
               <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                 Archivo Fotografico
