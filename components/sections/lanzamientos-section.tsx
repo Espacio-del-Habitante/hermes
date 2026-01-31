@@ -81,7 +81,7 @@ export function LanzamientosSection({ isActive, onNavigateToAlbum }: Lanzamiento
               </button>
             </div>
           </div>
-        )}
+        
       </div>
 
       {/* Right panel - Release list */}
