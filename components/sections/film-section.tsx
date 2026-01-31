@@ -28,7 +28,7 @@ export function FilmSection({ isActive }: FilmSectionProps) {
       </div>
 
       {/* Left - Title and info */}
-      <div ref={scrollRef} className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden pb-24 sm:pb-12 md:pb-12">
+      <div ref={scrollRef} className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-12 xl:px-16 xl:py-16 overflow-y-auto overflow-x-hidden pb-32 sm:pb-16 md:pb-16">
         <div 
           className={`flex-shrink-0 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -53,9 +53,9 @@ export function FilmSection({ isActive }: FilmSectionProps) {
               src="/images/probando-la-sopa.png"
               alt="Documental Raices del Pacifico"
               fill
-              className="object-cover grayscale blur-sm"
+              className="object-cover grayscale blur-sm opacity-60"
             />
-            <div className="absolute inset-0 bg-[#0a0a0a]/40" />
+            <div className="absolute inset-0 bg-[#0a0a0a]/75" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/50 flex items-center justify-center bg-black/30">
                 <Play className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white ml-1" />
@@ -112,8 +112,9 @@ export function FilmSection({ isActive }: FilmSectionProps) {
             src="/images/probando-la-sopa.png"
             alt="Film still"
             fill
-            className="object-cover grayscale blur-sm"
+            className="object-cover grayscale blur-sm opacity-60"
           />
+          <div className="absolute inset-0 bg-[#0a0a0a]/45" />
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
           
