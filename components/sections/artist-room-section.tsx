@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import { getAlbumsForArtist, type Album } from "@/lib/albums"
 import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
@@ -49,15 +49,15 @@ function AlbumCard({
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80" />
       <div
-        className="absolute top-0 right-0 w-10 h-10 border-t-2 border-r-2 transition-colors duration-300 group-hover:border-[#F25835]"
+        className="absolute top-0 right-0 w-7 h-7 md:w-9 md:h-9 border-t-2 border-r-2 transition-colors duration-300 group-hover:border-[#F25835]"
         style={{ borderColor: album.color }}
       />
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <p className="font-mono text-[10px] tracking-[0.15em] text-white/60 uppercase">
+      <div className="absolute bottom-0 left-0 right-0 p-2.5 md:p-3">
+        <p className="font-mono text-[10px] tracking-[0.15em] text-white/60 uppercase truncate">
           {album.year} · {album.artist}
         </p>
         <h3
-          className="font-serif text-lg md:text-xl italic mt-1 group-hover:text-[#F25835] transition-colors"
+          className="font-serif text-sm md:text-lg italic mt-1 group-hover:text-[#F25835] transition-colors truncate"
           style={{ color: album.color }}
         >
           {album.title}
@@ -119,6 +119,11 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
     }
   }
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
+
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
       <div className="h-full min-h-0 flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12">
@@ -162,7 +167,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
         </div>
 
         {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
           {activeSection === "albumes" && (
             <div 
               className={`transition-all duration-700 ${
@@ -183,7 +188,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                   <p className="font-mono text-[10px] tracking-[0.2em] text-[#F25835] uppercase mb-4">
                     Solo
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
                     {individual.map((album, index) => (
                       <AlbumCard
                         key={album.id}
@@ -203,7 +208,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                   <p className="font-mono text-[10px] tracking-[0.2em] text-[#9AD9B0] uppercase mb-4">
                     Colaboraciones
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
                     {collaborations.map((album, index) => (
                       <AlbumCard
                         key={album.id}
@@ -239,7 +244,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               {isComingSoon ? (
                 <ProximamentePlaceholder />
               ) : collaborations.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
                   {collaborations.map((album, index) => (
                     <AlbumCard
                       key={album.id}

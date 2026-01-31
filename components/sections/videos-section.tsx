@@ -3,7 +3,7 @@
 import Image from "next/image"
 import { Play } from "lucide-react"
 import { getGalleryVideoUrl, getGalleryImageUrl, GALLERY } from "@/lib/supabase-urls"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { VideoGalleryLightbox } from "@/components/video-gallery-lightbox"
 
 interface VideosSectionProps {
@@ -29,6 +29,11 @@ const videosForLightbox = videos.map((v) => ({
 export function VideosSection({ isActive }: VideosSectionProps) {
   /** Índice del video seleccionado en el visor; null = vista grid */
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
@@ -48,7 +53,7 @@ export function VideosSection({ isActive }: VideosSectionProps) {
         </div>
 
         {/* Videos grid — con scroll para ver todos */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {videos.map((video, index) => (
             <button

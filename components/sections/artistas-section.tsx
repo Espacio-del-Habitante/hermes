@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import type { GalleryRoomId } from "@/lib/gallery-map"
 
@@ -14,10 +14,15 @@ const ARTIST_IDS: ArtistRoomId[] = ["grioth", "kiro", "arenas", "apolo", "manuch
 
 export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectionProps) {
   const [hoveredArtist, setHoveredArtist] = useState<string | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto">
+      <div ref={scrollRef} className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto overflow-x-hidden">
         {/* Section header */}
         <div 
           className={`mb-8 transition-all duration-700 delay-100 ${

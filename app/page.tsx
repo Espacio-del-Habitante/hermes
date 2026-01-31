@@ -73,76 +73,8 @@ export default function Home() {
   const navigateLeft = useCallback(() => navigate("left"), [navigate])
   const navigateRight = useCallback(() => navigate("right"), [navigate])
 
-  // Teclado
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") navigateRight()
-      if (e.key === "ArrowLeft") navigateLeft()
-      if (e.key === "ArrowUp") navigateUp()
-      if (e.key === "ArrowDown") navigateDown()
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [navigateUp, navigateDown, navigateLeft, navigateRight])
-
-  // Rueda: vertical = arriba/abajo, horizontal = izq/der
-  useEffect(() => {
-    let lastWheel = 0
-    const cooldown = 300
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault()
-      const now = Date.now()
-      if (now - lastWheel < cooldown) return
-      lastWheel = now
-
-      const dx = Math.abs(e.deltaX)
-      const dy = Math.abs(e.deltaY)
-      if (dx > dy) {
-        if (e.deltaX > 0) navigateRight()
-        else navigateLeft()
-      } else {
-        if (e.deltaY > 0) navigateDown()
-        else navigateUp()
-      }
-    }
-
-    window.addEventListener("wheel", handleWheel, { passive: false })
-    return () => window.removeEventListener("wheel", handleWheel)
-  }, [navigateUp, navigateDown, navigateLeft, navigateRight])
-
-  // Swipe táctil
-  useEffect(() => {
-    let startX = 0,
-      startY = 0
-    const min = 50
-
-    const handleStart = (e: TouchEvent) => {
-      startX = e.changedTouches[0].screenX
-      startY = e.changedTouches[0].screenY
-    }
-
-    const handleEnd = (e: TouchEvent) => {
-      const endX = e.changedTouches[0].screenX
-      const endY = e.changedTouches[0].screenY
-      const dx = endX - startX
-      const dy = endY - startY
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > min) {
-        if (dx > 0) navigateLeft()
-        else navigateRight()
-      } else if (Math.abs(dy) > min) {
-        if (dy > 0) navigateDown()
-        else navigateUp()
-      }
-    }
-
-    window.addEventListener("touchstart", handleStart, { passive: true })
-    window.addEventListener("touchend", handleEnd, { passive: true })
-    return () => {
-      window.removeEventListener("touchstart", handleStart)
-      window.removeEventListener("touchend", handleEnd)
-    }
-  }, [navigateUp, navigateDown, navigateLeft, navigateRight])
+  // Navegación solo por joystick: sin teclado, rueda ni swipe.
+  // El scroll dentro de cada sección no debe cambiar de sección ni mover la página.
 
   return (
     <main className="h-screen w-screen overflow-hidden bg-[#0a0a0a] text-white">

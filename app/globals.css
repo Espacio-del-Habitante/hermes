@@ -157,10 +157,16 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body {
+    overflow: hidden;
+    height: 100%;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
   body {
     @apply bg-background text-foreground;
   }
-  
   html {
     scroll-behavior: smooth;
   }

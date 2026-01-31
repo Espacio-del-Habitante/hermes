@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { useState, useRef, useEffect } from "react"
 import { Play } from "lucide-react"
 
 interface LanzamientosSectionProps {
@@ -38,10 +39,15 @@ const lanzamientos = [
 ]
 
 export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
+
   return (
     <section className="relative h-full w-screen flex-shrink-0 flex">
       {/* Left panel - Featured release */}
-      <div className="flex-1 bg-[#1a1a1a] flex flex-col pt-12 sm:pt-16 md:pt-24 p-6 sm:p-8 md:p-12 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 bg-[#1a1a1a] flex flex-col pt-12 sm:pt-16 md:pt-24 p-6 sm:p-8 md:p-12 overflow-y-auto overflow-x-hidden">
         <div 
           className={`transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"

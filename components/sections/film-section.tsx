@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { useRef, useEffect } from "react"
 import { Play } from "lucide-react"
 
 interface FilmSectionProps {
@@ -8,10 +9,15 @@ interface FilmSectionProps {
 }
 
 export function FilmSection({ isActive }: FilmSectionProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
+
   return (
     <section className="relative h-full w-full flex-shrink-0 flex overflow-hidden">
       {/* Left - Title and info */}
-      <div className="flex-1 bg-[#0a0a0a] flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 bg-[#0a0a0a] flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden">
         <div 
           className={`transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"

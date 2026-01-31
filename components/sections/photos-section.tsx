@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { getGalleryImageUrl, GALLERY } from "@/lib/supabase-urls"
 import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
 
@@ -22,6 +22,11 @@ const photosForLightbox = photos.map((p) => ({ src: p.src, title: p.title }))
 export function PhotosSection({ isActive }: PhotosSectionProps) {
   const [hoveredPhoto, setHoveredPhoto] = useState<number | null>(null)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
+  }, [isActive])
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
@@ -41,7 +46,7 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
         </div>
 
         {/* Photos masonry grid — con scroll para ver todas las fotos */}
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 content-start">
             {photos.map((photo, index) => (
             <button

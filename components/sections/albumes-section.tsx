@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { playlists } from "@/components/music-player"
 import { ALBUMS, getArtistIdsFromAlbum, type ArtistId } from "@/lib/albums"
 import { ARTISTS } from "@/lib/supabase-urls"
@@ -72,6 +72,11 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
   }
 
   const artistIdsInAlbum = getArtistIdsFromAlbum(selectedAlbum)
+  const tracklistScrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isActive && tracklistScrollRef.current) tracklistScrollRef.current.scrollTop = 0
+  }, [isActive])
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 flex flex-col md:flex-row overflow-hidden">
@@ -220,7 +225,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
           <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-4 shrink-0">
             Tracklist
           </p>
-          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-1 md:space-y-2 pr-1">
+          <div ref={tracklistScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-1 md:space-y-2 pr-1">
             {getTracksForAlbum().map((track, index) => {
               const isCurrentTrack = currentPlaylist?.name === selectedAlbum.playlistName && 
                                      currentTrack?.id === track.id
