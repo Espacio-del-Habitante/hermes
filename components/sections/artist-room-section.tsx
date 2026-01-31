@@ -139,18 +139,22 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
     if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
   }, [isActive])
 
-  // Detectar scroll para colapsar el hero en móvil
+  // Detectar scroll para colapsar el hero en móvil (histéresis para evitar rebote)
   useEffect(() => {
     const scrollContainer = scrollRef.current
     if (!scrollContainer) return
 
     const handleScroll = () => {
       const scrollTop = scrollContainer.scrollTop
-      setIsScrolled(scrollTop > 50) // Cambiar a estado colapsado después de 50px de scroll
+      setIsScrolled((prev) => {
+        if (scrollTop > 60) return true
+        if (scrollTop < 25) return false
+        return prev
+      })
     }
 
-    scrollContainer.addEventListener('scroll', handleScroll)
-    return () => scrollContainer.removeEventListener('scroll', handleScroll)
+    scrollContainer.addEventListener("scroll", handleScroll, { passive: true })
+    return () => scrollContainer.removeEventListener("scroll", handleScroll)
   }, [])
 
   return (
@@ -251,7 +255,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
           <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-20 sm:pb-12 md:pb-0">
           {activeSection === "albumes" && (
             <div 
-              className={`transition-all duration-700 ${
+              className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -315,7 +319,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
 
           {activeSection === "colaboraciones" && (
             <div 
-              className={`transition-all duration-700 ${
+              className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
