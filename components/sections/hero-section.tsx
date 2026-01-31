@@ -85,7 +85,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
                   className="group text-left touch-manipulation flex-1"
                 >
                   <h3 className="font-bebas text-base sm:text-lg text-white/40 mb-1 transition-colors group-active:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                    Photos
+                    Fotos
                   </h3>
                   <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
                     Archivo Fotografico
@@ -158,7 +158,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
                 className="group text-left touch-manipulation"
               >
                 <h3 className="font-bebas text-lg sm:text-xl md:text-2xl lg:text-3xl text-white/40 mb-0.5 sm:mb-1 transition-colors group-active:text-white md:group-hover:text-white uppercase tracking-wide" style={{ fontFamily: 'var(--font-bebas-neue), sans-serif' }}>
-                  Photos
+                  Fotos
                 </h3>
                 <p className="font-mono text-[8px] sm:text-[9px] md:text-[10px] tracking-[0.15em] text-white/40 uppercase">
                   Archivo Fotografico

@@ -41,7 +41,7 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
             Archivo Fotografico
           </p>
           <h2 className="font-serif text-5xl md:text-7xl italic text-white">
-            Photos
+            Fotos
           </h2>
         </div>
 
