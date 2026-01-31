@@ -23,7 +23,7 @@ export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectio
 
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div ref={scrollRef} className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto overflow-x-hidden">
+      <div ref={scrollRef} className="h-full flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto overflow-x-hidden pb-24 sm:pb-8 md:pb-8">
         {/* Section header */}
         <div 
           className={`mb-8 transition-all duration-700 delay-100 ${
@@ -39,7 +39,7 @@ export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectio
         </div>
 
         {/* Artists grid */}
-        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-4 sm:pb-0">
           {ARTIST_IDS.map((id, index) => {
             const artist = ARTISTS[id]
             const isComingSoon = artist.imageCount === 0

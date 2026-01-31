@@ -47,7 +47,7 @@ export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
   return (
     <section className="relative h-full w-screen flex-shrink-0 flex">
       {/* Left panel - Featured release */}
-      <div ref={scrollRef} className="flex-1 bg-[#1a1a1a] flex flex-col pt-12 sm:pt-16 md:pt-24 p-6 sm:p-8 md:p-12 overflow-y-auto overflow-x-hidden">
+      <div ref={scrollRef} className="flex-1 bg-[#1a1a1a] flex flex-col pt-12 sm:pt-16 md:pt-24 p-6 sm:p-8 md:p-12 overflow-y-auto overflow-x-hidden pb-24 sm:pb-12 md:pb-12">
         <div 
           className={`transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -63,7 +63,7 @@ export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
 
         {/* Featured album */}
         <div 
-          className={`flex-1 flex flex-col md:flex-row gap-8 items-center justify-center transition-all duration-700 delay-200 ${
+          className={`flex-1 flex flex-col md:flex-row gap-8 items-center justify-center pb-4 sm:pb-0 transition-all duration-700 delay-200 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
