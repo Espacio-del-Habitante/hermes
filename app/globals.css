@@ -4,12 +4,14 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Viewport height helper to avoid mobile URL bar issues */
+  --viewport-height: 100vh;
   /* Layout heights */
   --header-height-mobile: 64px;
   --header-height-desktop: 80px;
   --music-player-height: 56px;
-  --content-height-mobile: calc(100vh - var(--header-height-mobile) - var(--music-player-height));
-  --content-height-desktop: calc(100vh - var(--header-height-desktop) - var(--music-player-height));
+  --content-height-mobile: calc(var(--viewport-height) - var(--header-height-mobile) - var(--music-player-height));
+  --content-height-desktop: calc(var(--viewport-height) - var(--header-height-desktop) - var(--music-player-height));
 
   /* Grayscale base palette */
   --background: #0a0a0a;
@@ -63,6 +65,12 @@
   --gray-800: #262626;
   --gray-900: #171717;
   --gray-950: #0a0a0a;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --viewport-height: 100dvh;
+  }
 }
 
 .dark {

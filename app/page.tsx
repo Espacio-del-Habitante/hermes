@@ -128,10 +128,10 @@ export default function Home() {
       {/* Altura: 100vh - header (64px móvil, 80px desktop) - music player (56px) */}
       {/* Margin top: header height (64px móvil, 80px desktop) */}
       <div
-        className="relative w-full overflow-hidden md:[height:calc(100vh-80px-56px)] md:mt-20"
+        className="relative w-full overflow-hidden"
         style={{
-          height: "calc(100vh - 64px - 56px)",
-          marginTop: "64px",
+          height: "var(--content-height)",
+          marginTop: "var(--header-height)",
         }}
       >
         <div
