@@ -91,9 +91,9 @@ export function LanzamientosSection({ isActive, onNavigateToAlbum }: Lanzamiento
           </div>
           <div
             ref={listScrollRef}
-            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 sm:px-6 pb-24 sm:pb-8"
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 sm:px-6 pb-24 sm:pb-12"
           >
-            <div className="flex flex-col gap-2.5">
+            <div className="flex flex-col gap-2.5 pb-4 sm:pb-0">
               {releases.map((release, index) => (
                 <button
                   key={release.id}

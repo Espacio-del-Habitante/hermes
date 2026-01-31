@@ -28,7 +28,7 @@ export function FilmSection({ isActive }: FilmSectionProps) {
       </div>
 
       {/* Left - Title and info */}
-      <div ref={scrollRef} className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden pb-28 sm:pb-12">
+      <div ref={scrollRef} className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 overflow-y-auto overflow-x-hidden pb-24 sm:pb-12 md:pb-12">
         <div 
           className={`flex-shrink-0 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"

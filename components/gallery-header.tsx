@@ -84,8 +84,8 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
           </button>
         </div>
 
-        {/* Desktop: pasillo + salas abajo (concepto galería) */}
-        <nav className="hidden md:flex items-center gap-8">
+      {/* Desktop: pasillo + salas abajo (concepto galería) */}
+      <nav className="hidden lg:flex items-center gap-8">
           {mainCorridor.map((item) => (
             <button
               key={item.id}
@@ -115,8 +115,8 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
           ))}
         </nav>
 
-        {/* Social links */}
-        <div className="hidden md:flex items-center gap-6">
+      {/* Social links */}
+      <div className="hidden lg:flex items-center gap-6">
           <a 
             href="https://instagram.com" 
             target="_blank" 

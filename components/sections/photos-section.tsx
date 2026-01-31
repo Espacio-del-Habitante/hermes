@@ -30,7 +30,7 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 pb-24 sm:pb-12 md:pb-12">
         {/* Header */}
         <div 
           className={`shrink-0 mb-8 transition-all duration-700 delay-100 ${
@@ -46,8 +46,8 @@ export function PhotosSection({ isActive }: PhotosSectionProps) {
         </div>
 
         {/* Photos masonry grid — con scroll para ver todas las fotos */}
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 content-start">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-4 sm:pb-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 content-start pb-4 sm:pb-0">
             {photos.map((photo, index) => (
             <button
               type="button"

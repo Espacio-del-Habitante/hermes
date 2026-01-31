@@ -38,9 +38,9 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
           </div>
 
           {/* Mobile Layout: título arriba (menos negro), imagen y resto abajo */}
-          <div className="lg:hidden flex flex-col flex-1 min-h-0 pt-0.5 sm:pt-1 pb-4 sm:pb-6">
-            {/* Título arriba */}
-            <div className="flex-shrink-0 mb-2 sm:mb-3">
+          <div className="lg:hidden flex flex-col flex-1 min-h-0 pt-0.5 sm:pt-1 pb-20 sm:pb-24 md:pb-16">
+            {/* Título - pegado abajo */}
+            <div className="flex-shrink-0 mt-auto mb-2 sm:mb-3">
               <h1 
                 className={`font-serif italic text-[22vw] sm:text-[20vw] leading-[0.9] text-white uppercase font-normal transition-all duration-700 delay-200 ${
                   isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -51,7 +51,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
             </div>
 
             {/* Resto: zona donde empieza la imagen + categorías y descripción */}
-            <div className="flex-1 min-h-0 flex flex-col justify-end">
+            <div className="flex-shrink-0 flex flex-col">
               {/* Categories - Mobile */}
               <div 
                 className={`flex-shrink-0 flex flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 transition-all duration-700 delay-300 ${
@@ -95,7 +95,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
 
               {/* Description - Mobile */}
               <div 
-                className={`flex-shrink-0 mb-4 sm:mb-6 transition-all duration-700 delay-400 ${
+                className={`flex-shrink-0 mb-2 sm:mb-4 transition-all duration-700 delay-400 ${
                   isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
                 }`}
               >

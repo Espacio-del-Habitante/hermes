@@ -252,7 +252,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
         <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 md:px-8 lg:p-12">
 
           {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
-          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-20 sm:pb-12 md:pb-0">
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-24 sm:pb-16 md:pb-0">
           {activeSection === "albumes" && (
             <div 
               className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
@@ -273,7 +273,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                   <p className="font-mono text-[10px] tracking-[0.2em] text-[#F25835] uppercase mb-4">
                     Solo
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 pb-4 sm:pb-0">
                     {individual.map((album, index) => (
                       <AlbumCard
                         key={album.id}
@@ -293,7 +293,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
                   <p className="font-mono text-[10px] tracking-[0.2em] text-[#9AD9B0] uppercase mb-4">
                     Colaboraciones
                   </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 pb-4 sm:pb-0">
                     {collaborations.map((album, index) => (
                       <AlbumCard
                         key={album.id}
@@ -329,7 +329,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               {isComingSoon ? (
                 <ProximamentePlaceholder />
               ) : collaborations.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5 pb-4 sm:pb-0">
                   {collaborations.map((album, index) => (
                     <AlbumCard
                       key={album.id}
@@ -364,7 +364,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-[10px] text-white/30 uppercase mb-4">
                 Clic en una foto para ampliar · Flechas para navegar
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pb-4 sm:pb-0">
                 {artistImages.map((num, index) => (
                   <button
                     type="button"
@@ -421,7 +421,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <p className="font-mono text-[10px] text-white/30 uppercase mb-4">
                 Clic en una imagen para ampliar · Flechas para navegar
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 sm:pb-0">
                 {artistImages.slice(0, 6).map((num, index) => (
                   <button
                     type="button"

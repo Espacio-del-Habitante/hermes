@@ -142,7 +142,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
       </div>
 
         {/* Right - Album selector and tracklist */}
-        <div className="flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-24 sm:pb-12 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 md:min-h-0">
+        <div className="flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-24 sm:pb-16 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 md:min-h-0">
         {/* Header */}
         <div 
           className={`mb-4 md:mb-8 transition-all duration-700 delay-100 ${
@@ -229,7 +229,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
           <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-3 md:mb-4 shrink-0">
             Tracklist
           </p>
-          <div ref={tracklistScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-1 md:space-y-2 pr-1">
+          <div ref={tracklistScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-1 md:space-y-2 pr-1 pb-4 sm:pb-0">
             {getTracksForAlbum().map((track, index) => {
               const isCurrentTrack = currentPlaylist?.name === selectedAlbum.playlistName && 
                                      currentTrack?.id === track.id
