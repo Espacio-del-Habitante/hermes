@@ -885,7 +885,7 @@ export function MusicPlayer() {
         />
 
         {/* Content */}
-        <div className="relative h-full flex flex-col items-center justify-center p-4 sm:p-8">
+        <div className="relative h-full flex flex-col items-center overflow-y-auto p-4 sm:p-8 pt-16 sm:pt-20">
           {/* Close button */}
           <button
             onClick={() => setIsExpanded(false)}
@@ -933,15 +933,15 @@ export function MusicPlayer() {
             </div>
           )}
 
-          {/* YouTube player - show when expanded */}
+          {/* YouTube player - show when expanded (tamaño fijo, no se achica) */}
           {isExpanded && hasUserInteracted && (
-            <div className="w-full max-w-5xl aspect-video bg-[#1a1a1a] rounded-lg overflow-hidden mb-6 sm:mb-8">
+            <div className="w-full max-w-3xl min-h-[140px] sm:min-h-[160px] aspect-video shrink-0 bg-[#1a1a1a] rounded-lg overflow-hidden mb-4 sm:mb-6">
               <div ref={visiblePlayerContainerRef} className="w-full h-full" />
             </div>
           )}
 
           {/* Current track info */}
-          <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-4 sm:mb-6 shrink-0">
             <p className="font-mono text-[10px] sm:text-xs tracking-[0.3em] text-[#F25835] uppercase mb-2">
               Reproduciendo
             </p>
@@ -961,12 +961,12 @@ export function MusicPlayer() {
             </div>
           </div>
 
-          {/* Playlist */}
-          <div className="w-full max-w-md">
+          {/* Playlist con scroll independiente */}
+          <div className="w-full max-w-md shrink-0">
             <p className="font-mono text-[10px] sm:text-xs tracking-[0.2em] text-white/40 uppercase mb-4 text-center">
               Playlist
             </p>
-            <div className="space-y-2">
+            <div className="max-h-[42vh] min-h-[140px] overflow-y-auto space-y-2 pr-2">
               {currentPlaylist.tracks.map((track, index) => (
                 <button
                   key={track.id}
@@ -1015,7 +1015,7 @@ export function MusicPlayer() {
             href={youtubePlaylistUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-6 sm:mt-8 flex items-center gap-2 font-mono text-[10px] sm:text-xs tracking-[0.15em] text-white/40 hover:text-[#F25835] uppercase transition-colors"
+            className="mt-4 sm:mt-6 shrink-0 flex items-center gap-2 font-mono text-[10px] sm:text-xs tracking-[0.15em] text-white/40 hover:text-[#F25835] uppercase transition-colors"
           >
             <span>Ver playlist completa en YouTube</span>
             <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />

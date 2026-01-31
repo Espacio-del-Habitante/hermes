@@ -6,8 +6,10 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react"
 
 export interface VideoGalleryItem {
   title: string
-  videoUrl: string
+  videoUrl?: string
   thumbnail?: string
+  /** ID de YouTube (ej: Nip7axa9Uf8) — si existe, se usa embed en vez de video. */
+  youtubeId?: string
 }
 
 interface VideoGalleryLightboxProps {
@@ -52,13 +54,14 @@ export function VideoGalleryLightbox({
     return () => window.removeEventListener("keydown", handleKey)
   }, [selectedIndex, onClose, goPrev, goNext])
 
-  // Al cambiar de video, reiniciar reproducción
+  // Al cambiar de video, reiniciar reproducción (solo para videos de plataforma)
   useEffect(() => {
-    if (videoRef.current && selectedIndex !== null) {
+    const vid = videos[currentIndex]
+    if (videoRef.current && selectedIndex !== null && vid?.videoUrl && !vid?.youtubeId) {
       videoRef.current.load()
       videoRef.current.play().catch(() => {})
     }
-  }, [currentIndex, selectedIndex])
+  }, [currentIndex, selectedIndex, videos])
 
   if (selectedIndex === null || total === 0 || typeof document === "undefined") return null
 
@@ -106,15 +109,25 @@ export function VideoGalleryLightbox({
         onClick={(e) => e.stopPropagation()}
         role="presentation"
       >
-        <video
-          ref={videoRef}
-          src={currentVideo.videoUrl}
-          controls
-          autoPlay
-          playsInline
-          className="w-full h-full object-contain"
-          poster={currentVideo.thumbnail}
-        />
+        {currentVideo.youtubeId ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${currentVideo.youtubeId}?autoplay=1`}
+            title={currentVideo.title}
+            className="absolute inset-0 w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            src={currentVideo.videoUrl}
+            controls
+            autoPlay
+            playsInline
+            className="w-full h-full object-contain"
+            poster={currentVideo.thumbnail}
+          />
+        )}
       </div>
 
       <button

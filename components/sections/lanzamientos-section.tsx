@@ -1,44 +1,20 @@
 "use client"
 
 import Image from "next/image"
-import { useState, useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { Play } from "lucide-react"
+import { getReleasesByDate, getReleaseTypeLabel } from "@/lib/albums"
 
 interface LanzamientosSectionProps {
   isActive: boolean
+  /** Ir a la sección Álbumes con este álbum seleccionado. */
+  onNavigateToAlbum?: (albumId: number) => void
 }
 
-const lanzamientos = [
-  {
-    id: 1,
-    title: "Probando la Sopa",
-    type: "Album",
-    year: "2023",
-    image: "/images/probando-la-sopa.png",
-    tracks: 12,
-    duration: "42 min",
-  },
-  {
-    id: 2,
-    title: "Cubanitos",
-    type: "Single",
-    year: "2024",
-    image: "/images/covers/cubanitos-cover.png",
-    tracks: 1,
-    duration: "3:28",
-  },
-  {
-    id: 3,
-    title: "Noches en La Habana",
-    type: "Single",
-    year: "2024",
-    image: "/images/guateke-cover.png",
-    tracks: 1,
-    duration: "5:01",
-  },
-]
+const releases = getReleasesByDate()
+const featured = releases[0]
 
-export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
+export function LanzamientosSection({ isActive, onNavigateToAlbum }: LanzamientosSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
@@ -84,23 +60,28 @@ export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
             <div className="absolute -inset-2 border border-[#F25835] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
           </div>
 
-          <div className="text-center md:text-left">
-            <p className="font-mono text-xs tracking-[0.2em] text-white/40 uppercase mb-2">
-              Album 2023
-            </p>
-            <h3 className="font-serif text-3xl md:text-4xl text-white italic mb-4">
-              Probando la Sopa
-            </h3>
-            <div className="flex items-center gap-4 justify-center md:justify-start text-white/50 font-mono text-xs">
-              <span>12 Tracks</span>
-              <span className="w-1 h-1 rounded-full bg-[#9AD9B0]" />
-              <span>42 min</span>
+            <div className="text-center md:text-left">
+              <p className="font-mono text-xs tracking-[0.2em] text-white/40 uppercase mb-2">
+                {getReleaseTypeLabel(featured.releaseType)} {featured.year}
+              </p>
+              <h3 className="font-serif text-3xl md:text-4xl text-white italic mb-4">
+                {featured.title}
+              </h3>
+              <div className="flex items-center gap-4 justify-center md:justify-start text-white/50 font-mono text-xs">
+                <span>{featured.tracks ?? "–"} {featured.tracks === 1 ? "track" : "tracks"}</span>
+                <span className="w-1 h-1 rounded-full bg-[#9AD9B0]" />
+                <span>{featured.duration ?? "–"}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigateToAlbum?.(featured.id)}
+                className="mt-6 px-6 py-3 border border-white/20 font-mono text-xs tracking-[0.15em] text-white uppercase hover:bg-white hover:text-black transition-all"
+              >
+                Escuchar Ahora
+              </button>
             </div>
-            <button className="mt-6 px-6 py-3 border border-white/20 font-mono text-xs tracking-[0.15em] text-white uppercase hover:bg-white hover:text-black transition-all">
-              Escuchar Ahora
-            </button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Right panel - Release list */}
@@ -115,11 +96,13 @@ export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
           </p>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          {lanzamientos.map((release, index) => (
-            <div
+        <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
+          {releases.map((release, index) => (
+            <button
               key={release.id}
-              className={`group flex gap-4 p-4 bg-[#1a1a1a] cursor-pointer transition-all duration-500 hover:bg-[#252525] ${
+              type="button"
+              onClick={() => onNavigateToAlbum?.(release.id)}
+              className={`group flex gap-4 p-4 bg-[#1a1a1a] cursor-pointer transition-all duration-500 hover:bg-[#252525] text-left w-full ${
                 isActive 
                   ? "opacity-100 translate-x-0" 
                   : "opacity-0 translate-x-8"
@@ -136,17 +119,17 @@ export function LanzamientosSection({ isActive }: LanzamientosSectionProps) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-mono text-[10px] tracking-[0.15em] text-[#F25835] uppercase">
-                  {release.type} {release.year}
+                  {getReleaseTypeLabel(release.releaseType)} {release.year}
                 </p>
                 <h4 className="font-serif text-lg text-white truncate">
                   {release.title}
                 </h4>
                 <p className="font-mono text-[10px] text-white/40">
-                  {release.tracks} {release.tracks === 1 ? "track" : "tracks"} - {release.duration}
+                  {release.tracks ?? "–"} {(release.tracks ?? 0) === 1 ? "track" : "tracks"} – {release.duration ?? "–"}
                 </p>
               </div>
-              <Play className="w-4 h-4 text-white/30 group-hover:text-[#F25835] self-center transition-colors" />
-            </div>
+              <Play className="w-4 h-4 text-white/30 group-hover:text-[#F25835] self-center transition-colors flex-shrink-0" />
+            </button>
           ))}
         </div>
 

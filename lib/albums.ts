@@ -12,6 +12,12 @@ export interface Album {
   playlistName: string
   /** slug del artista principal(es): "grioth" | "kiro" | "grioth-kiro" para colaboraciones */
   artistSlug?: "grioth" | "kiro" | "grioth-kiro"
+  /** Tipo de lanzamiento: álbum, EP o single */
+  releaseType?: "album" | "ep" | "single"
+  /** Cantidad de tracks (para mostrar en Lanzamientos) */
+  tracks?: number
+  /** Duración aprox. (para mostrar en Lanzamientos) */
+  duration?: string
 }
 
 export const ALBUMS: Album[] = [
@@ -19,43 +25,71 @@ export const ALBUMS: Album[] = [
     id: 1,
     title: "Guateke",
     artist: "Grioth & Kiro",
-    year: "2022",
+    year: "2025",
     image: "/images/covers/guateke-cover.png",
     color: "#F25835",
     playlistName: "Guateke",
     artistSlug: "grioth-kiro",
+    releaseType: "album",
+    tracks: 9,
+    duration: "32 min",
   },
   {
     id: 2,
     title: "Probando la Sopa",
     artist: "Grioth",
-    year: "2023",
+    year: "2022",
     image: "/images/covers/probando-la-sopa.jpeg",
     color: "#F29422",
     playlistName: "Probando la Sopa",
     artistSlug: "grioth",
+    releaseType: "album",
+    tracks: 12,
+    duration: "42 min",
   },
   {
     id: 3,
     title: "KITDROGA-EP",
     artist: "Kiro",
-    year: "2024",
+    year: "2021",
     image: "/images/covers/kitdroga-ep.jpg",
     color: "#9AD9B0",
     playlistName: "KITDROGA-EP",
     artistSlug: "kiro",
+    releaseType: "ep",
+    tracks: 7,
+    duration: "22 min",
   },
   {
     id: 4,
     title: "Con mas ganas de hacer rap que de trabajar",
     artist: "Grioth & Kiro",
-    year: "2024",
+    year: "2020",
     image: "/images/covers/cubanitos-cover.png",
     color: "#F25835",
     playlistName: "Con mas ganas de hacer rap que de trabajar",
     artistSlug: "grioth-kiro",
+    releaseType: "album",
+    tracks: 9,
+    duration: "28 min",
   },
 ]
+
+/** Lanzamientos ordenados por fecha (más reciente primero). Conectan con la sección Álbumes. */
+export function getReleasesByDate(): Album[] {
+  return [...ALBUMS].sort((a, b) => {
+    const yearA = parseInt(a.year, 10)
+    const yearB = parseInt(b.year, 10)
+    if (yearB !== yearA) return yearB - yearA
+    return b.id - a.id // mismo año: id mayor = más reciente
+  })
+}
+
+export function getReleaseTypeLabel(type?: "album" | "ep" | "single"): string {
+  if (type === "ep") return "EP"
+  if (type === "single") return "Single"
+  return "Álbum"
+}
 
 /** Álbumes individuales de Grioth */
 export function getGriothAlbums(): Album[] {
