@@ -350,7 +350,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
 
           {activeSection === "fotografias" && (
             <div 
-              className={`transition-all duration-700 ${
+              className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -407,7 +407,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
 
           {activeSection === "arte-visual" && (
             <div 
-              className={`transition-all duration-700 ${
+              className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -459,7 +459,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
 
           {activeSection === "contenido-extra" && (
             <div 
-              className={`transition-all duration-700 ${
+              className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
