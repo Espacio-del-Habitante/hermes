@@ -97,6 +97,7 @@
   --font-sans: 'Inter', 'Inter Fallback', sans-serif;
   --font-serif: 'Playfair Display', 'Playfair Display Fallback', serif;
   --font-mono: 'Space Mono', 'Space Mono Fallback', monospace;
+  --font-pt-serif: var(--font-pt-serif), 'PT Serif', serif;
   
   /* Accent decoration colors */
   --color-accent-coral: #F25835;

@@ -1,6 +1,6 @@
 import React from "react"
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display, Space_Mono } from 'next/font/google'
+import { Inter, Playfair_Display, Space_Mono, PT_Serif } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { Bebas_Neue } from 'next/font/google'
@@ -29,6 +29,13 @@ const _bebasNeue = Bebas_Neue({
   variable: '--font-bebas-neue'
 });
 
+const _ptSerif = PT_Serif({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-pt-serif'
+});
+
 export const metadata: Metadata = {
   title: 'LA GALERIA / CALI | Colectivo de Rap & Freestyle',
   description: 'Espacio dedicado a la elevación de la cultura hip-hop de Cali como arte de museo. Arte urbano, música del Pacífico colombiano.',
@@ -52,7 +59,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${_inter.variable} ${_playfair.variable} ${_spaceMono.variable} ${_bebasNeue.variable} font-sans antialiased`}>
+      <body className={`${_inter.variable} ${_playfair.variable} ${_spaceMono.variable} ${_bebasNeue.variable} ${_ptSerif.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>

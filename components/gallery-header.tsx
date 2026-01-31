@@ -58,10 +58,14 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
             e.stopPropagation()
             setIsMenuOpen(!isMenuOpen)
           }}
-          className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-colors active:text-[#F25835] md:hover:text-[#F25835] touch-manipulation z-[101] relative"
+          className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-all duration-200 active:text-[#F25835] active:scale-95 md:hover:text-[#F25835] touch-manipulation z-[101] relative"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
-          {isMenuOpen ? <X className="h-4 w-4 md:h-5 md:w-5" /> : <Menu className="h-4 w-4 md:h-5 md:w-5" />}
+          {isMenuOpen ? (
+            <X className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
+          ) : (
+            <Menu className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
+          )}
         </button>
         <button 
           onClick={() => onNavigate("inicio")}
@@ -140,7 +144,7 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
           />
           
           {/* Menu Content: mapa de la galería (pasillo + salas abajo) */}
-          <div className="fixed left-0 right-0 bottom-0 top-16 md:top-20 z-[99] md:hidden overflow-y-auto pointer-events-auto bg-[#0a0a0a]">
+          <div className="fixed left-0 right-0 bottom-0 top-16 md:top-20 z-[100] md:hidden overflow-y-auto pointer-events-auto bg-[#0a0a0a] animate-in slide-in-from-top-2 duration-300">
             <nav className="flex flex-col items-start gap-6 sm:gap-8 p-6 sm:p-8 min-h-full">
               <button
                 onClick={() => {
