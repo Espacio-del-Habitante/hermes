@@ -73,15 +73,19 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
 
   const artistIdsInAlbum = getArtistIdsFromAlbum(selectedAlbum)
   const tracklistScrollRef = useRef<HTMLDivElement>(null)
+  const sectionScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isActive && tracklistScrollRef.current) tracklistScrollRef.current.scrollTop = 0
+    if (isActive && sectionScrollRef.current) sectionScrollRef.current.scrollTop = 0
   }, [isActive])
 
   return (
-    <section className="relative h-full w-screen flex-shrink-0 flex flex-col md:flex-row overflow-hidden">
-      {/* Left - Album artwork display */}
-      <div className="flex-shrink-0 md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center pt-8 pb-4 md:pt-12 md:pb-12 px-4 md:p-4 md:p-8 lg:p-12 overflow-hidden">
+    <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
+      {/* Scrollable container for mobile */}
+      <div ref={sectionScrollRef} className="h-full flex flex-col md:flex-row overflow-y-auto overflow-x-hidden md:overflow-hidden">
+        {/* Left - Album artwork display */}
+        <div className="flex-shrink-0 md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center pt-8 pb-8 md:pt-12 md:pb-12 px-4 md:p-4 md:p-8 lg:p-12 md:min-h-0">
         {/* Background accent */}
         <div 
           className="absolute inset-0 opacity-5 transition-colors duration-700"
@@ -137,8 +141,8 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
         </div>
       </div>
 
-      {/* Right - Album selector and tracklist */}
-      <div className="flex-1 md:w-[480px] min-h-0 bg-[#1a1a1a] flex flex-col pt-6 pb-4 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12">
+        {/* Right - Album selector and tracklist */}
+        <div className="flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-24 sm:pb-12 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 md:min-h-0">
         {/* Header */}
         <div 
           className={`mb-4 md:mb-8 transition-all duration-700 delay-100 ${
@@ -277,7 +281,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
             })}
           </div>
         </div>
-
+      </div>
       </div>
     </section>
   )
