@@ -59,19 +59,15 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
       <header className="fixed top-0 left-0 right-0 z-[100] flex h-16 md:h-20 items-center justify-between px-4 sm:px-6 md:px-12 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-white/10">
         {/* Logo / Brand */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Menú hamburguesa solo en tablet y móvil; en web la navegación está en la barra */}
           <button
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              console.log('Menu clicked, current:', isMenuOpen)
-              setIsMenuOpen(prev => {
-                const newState = !prev
-                console.log('Setting to:', newState)
-                return newState
-              })
+              setIsMenuOpen(prev => !prev)
             }}
-            className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-all duration-200 active:text-[#F25835] active:scale-95 md:hover:text-[#F25835] touch-manipulation z-[102] relative"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="lg:hidden flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-all duration-200 active:text-[#F25835] active:scale-95 md:hover:text-[#F25835] touch-manipulation z-[102] relative"
+            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
             type="button"
           >
             {isMenuOpen ? (
@@ -288,6 +284,15 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
               className="fixed left-0 right-0 bottom-0 top-16 z-[120] overflow-y-auto pointer-events-auto bg-[#0a0a0a] animate-in slide-in-from-top-2 duration-300"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Botón X para cerrar — esquina superior derecha */}
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-4 right-4 sm:top-6 sm:right-6 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors active:bg-white/10 active:text-white hover:bg-white/10 hover:text-white"
+                aria-label="Cerrar menú"
+              >
+                <X className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2]" />
+              </button>
               <nav className="flex flex-col items-start gap-6 sm:gap-8 p-6 sm:p-8 min-h-full">
                 <button
                   onClick={() => {
