@@ -132,16 +132,80 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
   }
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
+
   useEffect(() => {
     if (isActive && scrollRef.current) scrollRef.current.scrollTop = 0
   }, [isActive])
 
+  // Detectar scroll para colapsar el hero en móvil
+  useEffect(() => {
+    const scrollContainer = scrollRef.current
+    if (!scrollContainer) return
+
+    const handleScroll = () => {
+      const scrollTop = scrollContainer.scrollTop
+      setIsScrolled(scrollTop > 50) // Cambiar a estado colapsado después de 50px de scroll
+    }
+
+    scrollContainer.addEventListener('scroll', handleScroll)
+    return () => scrollContainer.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <section className="relative h-full w-screen flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full min-h-0 flex flex-col pt-12 sm:pt-16 md:pt-24 p-4 sm:p-6 md:p-8 lg:p-12">
-        {/* Header con botón de regreso */}
+      <div className="h-full min-h-0 flex flex-col">
+        {/* Hero Image - Mobile only, colapsable al hacer scroll */}
         <div 
-          className={`shrink-0 mb-8 transition-all duration-700 delay-100 ${
+          ref={heroRef}
+          className={`relative md:hidden overflow-hidden transition-all duration-300 ease-out ${
+            isScrolled ? 'h-20' : 'h-48 sm:h-56'
+          }`}
+        >
+          <Image
+            src={getArtistImageUrl(artistId, 1)}
+            alt={artist.name}
+            fill
+            className={`object-cover transition-transform duration-300 ${
+              isScrolled ? 'scale-110' : 'scale-100'
+            }`}
+            unoptimized
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
+          {/* Botón de regreso sobre la imagen */}
+          <button
+            onClick={onNavigateBack}
+            className={`absolute top-2 left-2 sm:top-4 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 px-2 py-1 sm:px-3 sm:py-1.5 bg-black/50 backdrop-blur-sm rounded border border-white/20 text-white/80 hover:text-white hover:bg-black/70 transition-all group ${
+              isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            } ${isScrolled ? 'scale-90' : 'scale-100'}`}
+            style={{ transitionDelay: '100ms' }}
+          >
+            <ArrowLeft className={`transition-all ${isScrolled ? 'h-3 w-3' : 'h-3.5 w-3.5'} group-hover:-translate-x-1`} />
+            <span className={`font-mono tracking-[0.15em] uppercase transition-all ${
+              isScrolled ? 'text-[9px] opacity-0 w-0' : 'text-[10px] opacity-100 w-auto'
+            }`}>Volver</span>
+          </button>
+          {/* Nombre del artista sobre la imagen */}
+          <div className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ${
+            isScrolled ? 'p-2' : 'p-4'
+          } ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            {!isScrolled && (
+              <p className="font-mono text-[9px] tracking-[0.2em] text-[#F25835] uppercase mb-1">
+                Sala Individual
+              </p>
+            )}
+            <h2 className={`font-serif italic text-white transition-all ${
+              isScrolled ? 'text-xl' : 'text-3xl'
+            }`}>
+              {artist.name}
+            </h2>
+          </div>
+        </div>
+
+        {/* Header con botón de regreso - Desktop only */}
+        <div 
+          className={`hidden md:block shrink-0 pt-12 md:pt-24 px-4 sm:px-6 md:p-8 lg:p-12 mb-8 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
@@ -161,25 +225,30 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
           </h2>
         </div>
 
-        {/* Navegación de secciones */}
-        <div className="shrink-0 mb-4 flex flex-wrap gap-4 border-b border-white/10 pb-4">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => setActiveSection(section.id)}
-              className={`font-mono text-xs sm:text-sm tracking-[0.15em] uppercase transition-all duration-300 pb-2 border-b-2 ${
-                activeSection === section.id
-                  ? "text-[#F25835] border-[#F25835]"
-                  : "text-white/40 border-transparent hover:text-white/70"
-              }`}
-            >
-              {section.label}
-            </button>
-          ))}
+        {/* Navegación de secciones - Mobile: horizontal scroll, Desktop: normal */}
+        <div className="shrink-0 px-4 sm:px-6 md:px-8 lg:px-12 mb-4">
+          <div className="flex gap-2 sm:gap-4 overflow-x-auto scrollbar-hide pb-2 border-b border-white/10 md:flex-wrap md:overflow-x-visible">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                className={`font-mono text-[10px] sm:text-xs md:text-sm tracking-[0.15em] uppercase transition-all duration-300 pb-2 border-b-2 whitespace-nowrap flex-shrink-0 ${
+                  activeSection === section.id
+                    ? "text-[#F25835] border-[#F25835]"
+                    : "text-white/40 border-transparent hover:text-white/70 active:text-white/70"
+                }`}
+              >
+                {section.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
+        {/* Contenido con padding */}
+        <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 md:px-8 lg:p-12">
+
+          {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-20 sm:pb-12 md:pb-0">
           {activeSection === "albumes" && (
             <div 
               className={`transition-all duration-700 ${
@@ -396,6 +465,7 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
               <ProximamentePlaceholder />
             </div>
           )}
+          </div>
         </div>
 
         {/* Decorative element */}
