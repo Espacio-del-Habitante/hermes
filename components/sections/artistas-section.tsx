@@ -61,12 +61,15 @@ export function ArtistasSection({ isActive, onNavigateToArtist }: ArtistasSectio
                   <div className="relative aspect-square overflow-hidden bg-[#0a0a0a] border border-white/10 group-hover:border-white/20 transition-all duration-300">
                     {/* Fondo con viñeta — más claro en centro para que la silueta se vea */}
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(30,30,30,0.8)_0%,rgba(10,10,10,0.95)_60%,#080808_100%)]" />
-                    {/* Silueta grande — más oscura al hover */}
-                    <div className="absolute inset-0 flex items-end justify-center pb-4 md:pb-6">
-                      <User 
-                        className="w-44 h-44 md:w-56 md:h-56 lg:w-64 lg:h-64 text-white/[0.08] fill-white/[0.06] stroke-white/[0.04] group-hover:fill-white/[0.02] group-hover:stroke-white/[0.02] transition-all duration-300" 
-                        strokeWidth={1.5} 
-                      />
+                    {/* Vinilo */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full bg-gradient-to-br from-[#1a1a1a] via-[#0a0a0a] to-[#000000] opacity-90">
+                        <div className="absolute inset-3 rounded-full border border-white/15" />
+                        <div className="absolute inset-6 rounded-full border border-white/10" />
+                        <div className="absolute inset-9 rounded-full border border-white/10" />
+                        <div className="absolute inset-[42%] rounded-full bg-[#000000] border-2 border-white/20 shadow-inner" />
+                        <div className="absolute inset-[47%] rounded-full bg-[#1a1a1a] border border-white/10" />
+                      </div>
                     </div>
                     {/* Overlay oscuro al hover */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 pointer-events-none" />

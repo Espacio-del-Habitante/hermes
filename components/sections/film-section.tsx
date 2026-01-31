@@ -28,7 +28,14 @@ export function FilmSection({ isActive }: FilmSectionProps) {
       </div>
 
       {/* Left - Title and info */}
-      <div ref={scrollRef} className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-12 xl:px-16 xl:py-16 overflow-y-auto overflow-x-hidden pb-32 sm:pb-16 md:pb-16">
+      <div
+        ref={scrollRef}
+        className="flex-1 min-h-0 bg-[#0a0a0a] flex flex-col px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-12 lg:py-12 xl:px-16 xl:py-16 overflow-y-auto overflow-x-hidden pb-8 sm:pb-8 md:pb-8"
+        style={{
+          paddingBottom: "calc(var(--music-player-height) + 6rem)",
+          scrollPaddingBottom: "calc(var(--music-player-height) + 6rem)",
+        }}
+      >
         <div 
           className={`flex-shrink-0 transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -87,16 +94,15 @@ export function FilmSection({ isActive }: FilmSectionProps) {
             <Play className="w-4 h-4" />
             Ver Documental
           </button>
-        </div>
-
-        {/* Bottom hint */}
-        <div className="flex-shrink-0 flex items-center justify-between mt-4">
-          <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
-            Scroll to continue exploring
-          </p>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-[1px] bg-[#F29422]" />
-            <span className="font-mono text-[10px] text-[#F29422]">02</span>
+          {/* Bottom hint */}
+          <div className="mt-4 mb-10 flex w-full flex-row gap-2 justify-between">
+            <p className="font-mono text-[10px] tracking-[0.1em] text-white/30 uppercase">
+              Continua explorando
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-[1px] bg-[#F29422]" />
+              <span className="font-mono text-[10px] text-[#F29422]">02</span>
+            </div>
           </div>
         </div>
       </div>
