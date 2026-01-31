@@ -25,7 +25,10 @@ import {
 } from "@/lib/gallery-map"
 import { ARTISTS } from "@/lib/supabase-urls"
 
-const CONTENT_HEIGHT = "calc(100vh - 64px - 56px)" // header + music player
+// Altura del contenido: viewport completo menos header y music player
+// Header: h-16 (64px) en móvil, h-20 (80px) en desktop (md:)
+// Music player: aproximadamente 56px (barra de progreso + contenido)
+// Usamos CSS custom properties para hacerlo responsive
 
 /** Pantalla mínima para artistas "Próximamente": candado + texto + volver (no se muestra su sala completa). */
 function ArtistComingSoonPlaceholder({
@@ -122,10 +125,12 @@ export default function Home() {
       <GalleryHeader currentSection={currentRoom} onNavigate={navigateToRoom} />
 
       {/* Viewport: solo la celda visible. Contenido en grid 4x2 que se desplaza. */}
+      {/* Altura: 100vh - header (64px móvil, 80px desktop) - music player (56px) */}
+      {/* Margin top: header height (64px móvil, 80px desktop) */}
       <div
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden md:[height:calc(100vh-80px-56px)] md:mt-20"
         style={{
-          height: CONTENT_HEIGHT,
+          height: "calc(100vh - 64px - 56px)",
           marginTop: "64px",
         }}
       >

@@ -4,6 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Layout heights */
+  --header-height-mobile: 64px;
+  --header-height-desktop: 80px;
+  --music-player-height: 56px;
+  --content-height-mobile: calc(100vh - var(--header-height-mobile) - var(--music-player-height));
+  --content-height-desktop: calc(100vh - var(--header-height-desktop) - var(--music-player-height));
+
   /* Grayscale base palette */
   --background: #0a0a0a;
   --foreground: #ffffff;
@@ -168,8 +175,24 @@
   body {
     @apply bg-background text-foreground;
   }
+  
   html {
     scroll-behavior: smooth;
+  }
+  
+  /* Responsive header and content heights */
+  @media (min-width: 768px) {
+    :root {
+      --header-height: var(--header-height-desktop);
+      --content-height: var(--content-height-desktop);
+    }
+  }
+  
+  @media (max-width: 767px) {
+    :root {
+      --header-height: var(--header-height-mobile);
+      --content-height: var(--content-height-mobile);
+    }
   }
 }
 

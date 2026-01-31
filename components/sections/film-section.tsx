@@ -22,9 +22,9 @@ export function FilmSection({ isActive }: FilmSectionProps) {
           src="/images/probando-la-sopa.png"
           alt="Film background"
           fill
-          className="object-cover grayscale opacity-20"
+          className="object-cover grayscale opacity-20 blur-md"
         />
-        <div className="absolute inset-0 bg-[#0a0a0a]/80" />
+        <div className="absolute inset-0 bg-[#0a0a0a]/85" />
       </div>
 
       {/* Left - Title and info */}
@@ -42,8 +42,8 @@ export function FilmSection({ isActive }: FilmSectionProps) {
           </h2>
         </div>
 
-        {/* Mobile: imagen visible debajo del título */}
-        <div className="lg:hidden flex-shrink-0 my-4 sm:my-6 w-full aspect-video max-h-48 sm:max-h-56 relative overflow-hidden rounded bg-[#1a1a1a]">
+        {/* Mobile: imagen visible debajo del título - full screen height */}
+        <div className="lg:hidden flex-shrink-0 my-4 sm:my-6 w-full h-[60vh] sm:h-[65vh] min-h-[400px] relative overflow-hidden rounded bg-[#1a1a1a]">
           <div
             className={`absolute inset-0 transition-all duration-1000 delay-200 ${
               isActive ? "opacity-100 scale-100" : "opacity-0 scale-105"
@@ -53,9 +53,9 @@ export function FilmSection({ isActive }: FilmSectionProps) {
               src="/images/probando-la-sopa.png"
               alt="Documental Raices del Pacifico"
               fill
-              className="object-cover grayscale"
+              className="object-cover grayscale blur-sm"
             />
-            <div className="absolute inset-0 bg-[#0a0a0a]/30" />
+            <div className="absolute inset-0 bg-[#0a0a0a]/40" />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/50 flex items-center justify-center bg-black/30">
                 <Play className="w-6 h-6 sm:w-7 sm:h-7 text-white fill-white ml-1" />
@@ -65,7 +65,7 @@ export function FilmSection({ isActive }: FilmSectionProps) {
         </div>
 
         <div 
-          className={`flex-1 min-h-0 flex flex-col justify-center max-w-lg transition-all duration-700 delay-200 ${
+          className={`flex-1 min-h-0 flex flex-col justify-center max-w-lg transition-all duration-700 delay-200 pb-4 sm:pb-0 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -87,26 +87,6 @@ export function FilmSection({ isActive }: FilmSectionProps) {
             <Play className="w-4 h-4" />
             Ver Documental
           </button>
-
-          {/* Space for more documentaries - Mobile */}
-          <div className="md:hidden mt-12 space-y-8 pb-8">
-            <div className="opacity-50">
-              <h4 className="font-serif text-2xl text-white italic mb-3">
-                Próximamente
-              </h4>
-              <p className="font-mono text-sm text-white/40 leading-relaxed mb-4">
-                Más documentales y contenido exclusivo próximamente.
-              </p>
-            </div>
-            <div className="opacity-30">
-              <h4 className="font-serif text-2xl text-white italic mb-3">
-                Próximamente
-              </h4>
-              <p className="font-mono text-sm text-white/40 leading-relaxed">
-                Más documentales y contenido exclusivo próximamente.
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Bottom hint */}
@@ -132,10 +112,10 @@ export function FilmSection({ isActive }: FilmSectionProps) {
             src="/images/probando-la-sopa.png"
             alt="Film still"
             fill
-            className="object-cover grayscale"
+            className="object-cover grayscale blur-sm"
           />
           {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
           
           {/* Film frame overlay */}
           <div className="absolute inset-8 border border-white/10 pointer-events-none" />
