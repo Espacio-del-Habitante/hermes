@@ -26,6 +26,11 @@ const roomsBelow = [
 export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  // Debug: log menu state changes
+  useEffect(() => {
+    console.log('Menu state changed to:', isMenuOpen)
+  }, [isMenuOpen])
+
   // Close menu on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -50,162 +55,199 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
   }, [isMenuOpen])
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] flex h-16 md:h-20 items-center justify-between px-4 sm:px-6 md:px-12 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-white/10">
-      {/* Logo / Brand */}
-      <div className="flex items-center gap-2 sm:gap-4">
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            setIsMenuOpen(!isMenuOpen)
-          }}
-          className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-all duration-200 active:text-[#F25835] active:scale-95 md:hover:text-[#F25835] touch-manipulation z-[101] relative"
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {isMenuOpen ? (
-            <X className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
-          ) : (
-            <Menu className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
-          )}
-        </button>
-        <button 
-          onClick={() => onNavigate("inicio")}
-          className="font-mono text-xs sm:text-sm tracking-[0.15em] text-white transition-colors active:text-[#F25835] md:hover:text-[#F25835] touch-manipulation"
-        >
-          LA GALERIA / CALI
-        </button>
-      </div>
-
-      {/* Desktop: pasillo + salas abajo (concepto galería) */}
-      <nav className="hidden md:flex items-center gap-8">
-        {mainCorridor.map((item) => (
+    <>
+      <header className="fixed top-0 left-0 right-0 z-[100] flex h-16 md:h-20 items-center justify-between px-4 sm:px-6 md:px-12 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-white/10">
+        {/* Logo / Brand */}
+        <div className="flex items-center gap-2 sm:gap-4">
           <button
-            key={item.id}
-            onClick={() => onNavigate(item.id)}
-            className={`font-mono text-sm tracking-[0.15em] transition-colors ${
-              currentSection === item.id
-                ? "text-white"
-                : "text-white/50 hover:text-white"
-            }`}
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('Menu clicked, current:', isMenuOpen)
+              setIsMenuOpen(prev => {
+                const newState = !prev
+                console.log('Setting to:', newState)
+                return newState
+              })
+            }}
+            className="flex h-9 w-9 md:h-10 md:w-10 items-center justify-center text-white transition-all duration-200 active:text-[#F25835] active:scale-95 md:hover:text-[#F25835] touch-manipulation z-[102] relative"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            type="button"
           >
-            {item.label}
+            {isMenuOpen ? (
+              <X className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
+            ) : (
+              <Menu className="h-5 w-5 md:h-6 md:w-6 stroke-[2]" />
+            )}
           </button>
-        ))}
-        <span className="text-white/20 font-mono text-xs">|</span>
-        {roomsBelow.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onNavigate(item.id)}
-            className={`font-mono text-xs tracking-[0.15em] transition-colors ${
-              currentSection === item.id
-                ? "text-[#F25835]"
-                : "text-white/40 hover:text-white/70"
-            }`}
+          <button 
+            onClick={() => onNavigate("inicio")}
+            className="font-mono text-xs sm:text-sm tracking-[0.15em] text-white transition-colors active:text-[#F25835] md:hover:text-[#F25835] touch-manipulation"
           >
-            {item.label}
+            LA GALERIA / CALI
           </button>
-        ))}
-      </nav>
+        </div>
 
-      {/* Social links */}
-      <div className="hidden md:flex items-center gap-6">
-        <a 
-          href="https://instagram.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
-        >
-          IG
-        </a>
-        <a 
-          href="https://facebook.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
-        >
-          FB
-        </a>
-        <a 
-          href="https://youtube.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
-        >
-          YT
-        </a>
-      </div>
+        {/* Desktop: pasillo + salas abajo (concepto galería) */}
+        <nav className="hidden md:flex items-center gap-8">
+          {mainCorridor.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`font-mono text-sm tracking-[0.15em] transition-colors ${
+                currentSection === item.id
+                  ? "text-white"
+                  : "text-white/50 hover:text-white"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+          <span className="text-white/20 font-mono text-xs">|</span>
+          {roomsBelow.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`font-mono text-xs tracking-[0.15em] transition-colors ${
+                currentSection === item.id
+                  ? "text-[#F25835]"
+                  : "text-white/40 hover:text-white/70"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
-      {/* Mobile Menu Overlay */}
+        {/* Social links */}
+        <div className="hidden md:flex items-center gap-6">
+          <a 
+            href="https://instagram.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
+          >
+            IG
+          </a>
+          <a 
+            href="https://facebook.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
+          >
+            FB
+          </a>
+          <a 
+            href="https://youtube.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-mono text-xs tracking-[0.15em] text-white/50 transition-colors hover:text-white"
+          >
+            YT
+          </a>
+        </div>
+      </header>
+
+      {/* Sidebar Menu - Desktop: slides from left */}
       {isMenuOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop - Desktop only */}
           <div 
-            className="fixed left-0 right-0 bottom-0 top-16 md:top-20 bg-[#0a0a0a]/98 backdrop-blur-sm z-[99] md:hidden transition-opacity duration-300"
+            className="hidden md:block fixed inset-0 bg-[#0a0a0a]/80 backdrop-blur-sm z-[119] transition-opacity duration-300"
             onClick={() => setIsMenuOpen(false)}
           />
           
-          {/* Menu Content: mapa de la galería (pasillo + salas abajo) */}
-          <div className="fixed left-0 right-0 bottom-0 top-16 md:top-20 z-[100] md:hidden overflow-y-auto pointer-events-auto bg-[#0a0a0a] animate-in slide-in-from-top-2 duration-300">
-            <nav className="flex flex-col items-start gap-6 sm:gap-8 p-6 sm:p-8 min-h-full">
+          {/* Sidebar - Desktop: slides from left */}
+          <div 
+            className={`hidden md:flex fixed left-0 top-0 bottom-0 w-80 max-w-[90vw] z-[120] overflow-y-auto pointer-events-auto bg-[#0a0a0a] border-r border-white/10 transition-transform duration-300 ease-out ${
+              isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <nav className="flex flex-col items-start gap-8 p-8 w-full min-h-full">
+              <div className="flex items-center justify-between w-full mb-4">
+                <h2 className="font-mono text-sm tracking-[0.2em] text-white/40 uppercase">
+                  Navegación
+                </h2>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center text-white/60 transition-colors hover:text-white active:text-[#F25835]"
+                  aria-label="Close menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
               <button
                 onClick={() => {
                   onNavigate("inicio")
                   setIsMenuOpen(false)
                 }}
-                className={`font-serif text-3xl sm:text-4xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                className={`font-serif text-2xl italic transition-all duration-200 touch-manipulation active:scale-95 w-full text-left ${
                   currentSection === "inicio" 
                     ? "text-white" 
-                    : "text-white/50 active:text-white"
+                    : "text-white/50 hover:text-white"
                 }`}
               >
                 Inicio
               </button>
-              <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-2">
-                Pasillo
-              </p>
-              {mainCorridor.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onNavigate(item.id)
-                    setIsMenuOpen(false)
-                  }}
-                  className={`font-serif text-2xl sm:text-3xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
-                    currentSection === item.id 
-                      ? "text-white" 
-                      : "text-white/50 active:text-white"
-                  }`}
-                >
-                  {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
-                </button>
-              ))}
-              <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-4">
-                Salas abajo
-              </p>
-              {roomsBelow.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onNavigate(item.id)
-                    setIsMenuOpen(false)
-                  }}
-                  className={`font-serif text-xl sm:text-2xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
-                    currentSection === item.id 
-                      ? "text-[#F25835]" 
-                      : "text-white/50 active:text-white"
-                  }`}
-                >
-                  {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
-                </button>
-              ))}
+
+              <div className="w-full pt-4 border-t border-white/10">
+                <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase mb-4">
+                  Pasillo
+                </p>
+                <div className="flex flex-col gap-4">
+                  {mainCorridor.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onNavigate(item.id)
+                        setIsMenuOpen(false)
+                      }}
+                      className={`font-serif text-xl italic transition-all duration-200 touch-manipulation active:scale-95 text-left ${
+                        currentSection === item.id 
+                          ? "text-white" 
+                          : "text-white/50 hover:text-white"
+                      }`}
+                    >
+                      {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="w-full pt-4 border-t border-white/10">
+                <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase mb-4">
+                  Salas abajo
+                </p>
+                <div className="flex flex-col gap-4">
+                  {roomsBelow.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onNavigate(item.id)
+                        setIsMenuOpen(false)
+                      }}
+                      className={`font-serif text-lg italic transition-all duration-200 touch-manipulation active:scale-95 text-left ${
+                        currentSection === item.id 
+                          ? "text-[#F25835]" 
+                          : "text-white/50 hover:text-white"
+                      }`}
+                    >
+                      {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
               
               {/* Social links */}
-              <div className="mt-auto pt-8 sm:pt-12 pb-8">
-                <div className="flex gap-6 sm:gap-8">
+              <div className="mt-auto pt-8 pb-8 w-full border-t border-white/10">
+                <div className="flex gap-6">
                   <a 
                     href="https://instagram.com" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                    className="font-mono text-sm text-white/50 hover:text-white transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     IG
@@ -214,7 +256,7 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
                     href="https://facebook.com" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                    className="font-mono text-sm text-white/50 hover:text-white transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     FB
@@ -223,7 +265,7 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
                     href="https://youtube.com" 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                    className="font-mono text-sm text-white/50 hover:text-white transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     YT
@@ -232,8 +274,110 @@ export function GalleryHeader({ currentSection, onNavigate }: GalleryHeaderProps
               </div>
             </nav>
           </div>
+
+          {/* Mobile Menu Overlay - Full screen */}
+          <div className="md:hidden">
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-[#0a0a0a]/98 backdrop-blur-sm z-[119] transition-opacity duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            />
+            
+            {/* Menu Content: mapa de la galería (pasillo + salas abajo) */}
+            <div 
+              className="fixed left-0 right-0 bottom-0 top-16 z-[120] overflow-y-auto pointer-events-auto bg-[#0a0a0a] animate-in slide-in-from-top-2 duration-300"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <nav className="flex flex-col items-start gap-6 sm:gap-8 p-6 sm:p-8 min-h-full">
+                <button
+                  onClick={() => {
+                    onNavigate("inicio")
+                    setIsMenuOpen(false)
+                  }}
+                  className={`font-serif text-3xl sm:text-4xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                    currentSection === "inicio" 
+                      ? "text-white" 
+                      : "text-white/50 active:text-white"
+                  }`}
+                >
+                  Inicio
+                </button>
+                <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-2">
+                  Pasillo
+                </p>
+                {mainCorridor.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onNavigate(item.id)
+                      setIsMenuOpen(false)
+                    }}
+                    className={`font-serif text-2xl sm:text-3xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                      currentSection === item.id 
+                        ? "text-white" 
+                        : "text-white/50 active:text-white"
+                    }`}
+                  >
+                    {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
+                  </button>
+                ))}
+                <p className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase pt-4">
+                  Salas abajo
+                </p>
+                {roomsBelow.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      onNavigate(item.id)
+                      setIsMenuOpen(false)
+                    }}
+                    className={`font-serif text-xl sm:text-2xl italic transition-all duration-200 touch-manipulation active:scale-95 ${
+                      currentSection === item.id 
+                        ? "text-[#F25835]" 
+                        : "text-white/50 active:text-white"
+                    }`}
+                  >
+                    {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
+                  </button>
+                ))}
+                
+                {/* Social links */}
+                <div className="mt-auto pt-8 sm:pt-12 pb-8">
+                  <div className="flex gap-6 sm:gap-8">
+                    <a 
+                      href="https://instagram.com" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      IG
+                    </a>
+                    <a 
+                      href="https://facebook.com" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      FB
+                    </a>
+                    <a 
+                      href="https://youtube.com" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-sm text-white/50 active:text-white transition-colors touch-manipulation"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      YT
+                    </a>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </div>
         </>
       )}
-    </header>
+    </>
   )
 }
