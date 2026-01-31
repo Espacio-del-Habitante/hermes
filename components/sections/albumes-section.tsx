@@ -104,7 +104,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
       <div ref={sectionScrollRef} className="h-full flex flex-col md:flex-row overflow-y-auto overflow-x-hidden md:overflow-hidden">
         {/* Left - Album artwork display */}
         <div
-          className={`sticky top-0 z-10 flex-shrink-0 md:static md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center px-4 md:p-4 md:p-8 lg:p-12 md:min-h-0 transition-all duration-300 ${
+          className={`sticky top-0 z-10 md:z-0 flex-shrink-0 md:static md:flex-1 bg-[#0a0a0a] relative flex items-center justify-center px-4 md:p-4 md:p-8 lg:p-12 md:min-h-0 transition-all duration-300 ${
             isScrolled ? "pt-4 pb-4" : "pt-8 pb-8"
           }`}
         >
@@ -168,7 +168,7 @@ export function AlbumesSection({ isActive, initialAlbumId, onViewedInitialAlbum,
       </div>
 
         {/* Right - Album selector and tracklist */}
-        <div className="flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-24 sm:pb-16 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 md:min-h-0">
+        <div className="relative z-20 flex-1 md:w-[480px] bg-[#1a1a1a] flex flex-col pt-6 pb-24 sm:pb-16 md:pt-12 md:pb-12 px-4 sm:px-6 md:p-8 lg:p-12 md:min-h-0">
         {/* Header */}
         <div 
           className={`mb-4 md:mb-8 transition-all duration-700 delay-100 ${

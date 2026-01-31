@@ -254,40 +254,53 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
           </div>
         </div>
 
-        {/* Header con botón de regreso - Desktop only */}
-        <div 
-          className={`hidden md:block shrink-0 pt-12 md:pt-24 px-4 sm:px-6 md:p-8 lg:p-12 mb-8 transition-all duration-700 delay-100 ${
+        {/* Header con imagen - Desktop only */}
+        <div
+          className={`relative hidden md:block shrink-0 overflow-hidden transition-all duration-700 delay-100 ${
             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
-          <button
-            onClick={onNavigateBack}
-            className="flex items-center gap-2 mb-6 text-white/50 hover:text-white transition-colors group"
-          >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-mono text-xs tracking-[0.2em] uppercase">Volver</span>
-          </button>
-          
-          <p className="font-mono text-xs tracking-[0.3em] text-[#F25835] uppercase mb-2">
-            Sala Individual
-          </p>
-          <div className="flex items-center justify-between gap-6">
-            <h2 className="font-serif text-5xl md:text-7xl italic text-white">
-              {artist.name}
-            </h2>
-            <div className="flex items-center gap-4">
-              {renderSocialLink(
-                artist.instagramUrl,
-                `Instagram de ${artist.name}`,
-                Instagram,
-                "h-5 w-5",
-              )}
-              {renderSocialLink(
-                artist.facebookUrl,
-                `Facebook de ${artist.name}`,
-                Facebook,
-                "h-5 w-5",
-              )}
+          <div className="absolute inset-0">
+            <Image
+              src={getArtistImageUrl(artistId, 1)}
+              alt={artist.name}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-[#0a0a0a]" />
+          </div>
+
+          <div className="relative z-10 pt-10 md:pt-16 px-4 sm:px-6 md:p-6 lg:p-8 mb-6">
+            <button
+              onClick={onNavigateBack}
+              className="flex items-center gap-2 mb-6 text-white/70 hover:text-white transition-colors group"
+            >
+              <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+              <span className="font-mono text-xs tracking-[0.2em] uppercase">Volver</span>
+            </button>
+            
+            <p className="font-mono text-xs tracking-[0.3em] text-[#F25835] uppercase mb-2">
+              Sala Individual
+            </p>
+            <div className="flex items-center justify-between gap-6">
+            <h2 className="font-serif text-4xl md:text-6xl italic text-white">
+                {artist.name}
+              </h2>
+              <div className="flex items-center gap-4">
+                {renderSocialLink(
+                  artist.instagramUrl,
+                  `Instagram de ${artist.name}`,
+                  Instagram,
+                  "h-5 w-5",
+                )}
+                {renderSocialLink(
+                  artist.facebookUrl,
+                  `Facebook de ${artist.name}`,
+                  Facebook,
+                  "h-5 w-5",
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -315,7 +328,14 @@ export function ArtistRoomSection({ isActive, artistId, onNavigateBack, onNaviga
         <div className="flex-1 min-h-0 flex flex-col px-4 sm:px-6 md:px-8 lg:p-12">
 
           {/* Contenido de secciones — con scroll para ver todas las fotos/álbumes/etc. */}
-          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-24 sm:pb-16 md:pb-0">
+          <div
+            ref={scrollRef}
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-8 sm:pb-8 md:pb-8"
+            style={{
+              paddingBottom: "calc(var(--music-player-height) + 3.5rem)",
+              scrollPaddingBottom: "calc(var(--music-player-height) + 3.5rem)",
+            }}
+          >
           {activeSection === "albumes" && (
             <div 
               className={`min-h-[calc(100vh-6rem)] md:min-h-0 transition-all duration-700 ${
