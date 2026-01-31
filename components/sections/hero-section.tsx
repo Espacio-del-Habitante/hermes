@@ -78,7 +78,7 @@ export function HeroSection({ isActive, onNavigateToRoom }: HeroSectionProps) {
                   Film
                 </h3>
                 <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.15em] text-white/40 uppercase">
-                  Detras de Camara
+                  Bloopers & Detras de Camaras
                 </p>
               </button>
               <button 

@@ -36,7 +36,7 @@ export function VideosSection({ isActive }: VideosSectionProps) {
 
   return (
     <section className="relative h-full w-full flex-shrink-0 bg-[#0a0a0a] overflow-hidden">
-      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16">
+      <div className="h-full min-h-0 flex flex-col p-4 sm:p-6 md:p-8 lg:p-12 xl:p-16 pb-12 sm:pb-8 md:pb-8">
         {/* Header */}
         <div 
           className={`shrink-0 mb-4 transition-all duration-700 delay-100 ${
@@ -69,11 +69,11 @@ export function VideosSection({ isActive }: VideosSectionProps) {
         </div>
 
         {/* Videos grid */}
-        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1">
-          <p className="font-mono text-[10px] text-white/40 uppercase mb-4">
+        <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1  sm:pb-0">
+          <p className="font-mono text-[10px] text-white/40 uppercase ">
             {activeTab === "exclusivos" ? "Videos alojados en nuestra plataforma" : "Videoclips y estrenos en YouTube"}
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6  sm:pb-0">
             {currentVideos.map((video, index) => (
               <button
                 type="button"
