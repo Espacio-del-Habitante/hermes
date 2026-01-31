@@ -5,18 +5,30 @@ import { useState, useMemo, useRef, useEffect } from "react"
 import { getArtistImageUrl, ARTISTS, type ArtistRoomId } from "@/lib/supabase-urls"
 import { getAlbumsForArtist, type Album } from "@/lib/albums"
 import { PhotoGalleryLightbox } from "@/components/photo-gallery-lightbox"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Lock } from "lucide-react"
 
-/** Placeholder "Próximamente" como en Contenido Extra (dos bloques oscuros). */
+/** Placeholder "Próximamente" — estilo candado bloqueado (como en artistas). */
 function ProximamentePlaceholder() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
-        <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
-      </div>
-      <div className="aspect-video bg-[#1a1a1a] flex items-center justify-center border border-white/10">
-        <p className="font-mono text-xs text-white/30 uppercase">Próximamente</p>
-      </div>
+      {[1, 2].map((i) => (
+        <div
+          key={i}
+          className="group relative aspect-video overflow-hidden bg-[#0a0a0a] border border-white/10 hover:border-white/20 transition-all duration-300"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(26,26,26,0.6)_0%,rgba(10,10,10,0.95)_70%,#080808_100%)]" />
+          {/* Overlay oscuro al hover */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 pointer-events-none" />
+          {/* Candado — grande, sutil, más visible al hover */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <Lock className="w-[40%] h-[40%] max-w-24 max-h-24 text-white/[0.08] group-hover:text-white/[0.16] transition-all duration-300" strokeWidth={1} />
+          </div>
+          {/* Próximamente abajo */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-white/40 uppercase">Próximamente</p>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
