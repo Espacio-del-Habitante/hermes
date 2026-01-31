@@ -46,19 +46,20 @@ export function NavigationJoystick({
   const expandButtonPressedRef = useRef(false)
   const DRAG_THRESHOLD_PX = 8
 
-  // Posición por defecto: centro-derecha de la pantalla, bien visible y sin tapar el contenido principal
+  // Posición fija: esquina inferior derecha, encima del reproductor — igual en mobile, tablet y web
   function getDefaultJoystickPosition(collapsed: boolean, widthHint?: number) {
     if (typeof window === 'undefined') return { x: 0, y: 0 }
     const isMobile = window.innerWidth < 768
-    const width = widthHint ?? (collapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128))
-    const padding = isMobile ? 8 : 16
-    const headerHeight = 80
-    const musicPlayerHeight = 80
-    const usableHeight = window.innerHeight - headerHeight - musicPlayerHeight
-    const yCentered = headerHeight + Math.max(0, (usableHeight - width) / 2)
+    const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024
+    const isWeb = window.innerWidth >= 1024
+    const size = collapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : isTablet ? 112 : 128)
+    const width = widthHint ?? size
+    const padding = isMobile ? 12 : 16
+    // En web un poco más arriba para que no se tape con la barra del reproductor
+    const musicPlayerHeight = isWeb ? 100 : 72
     return {
-      x: Math.max(padding, window.innerWidth - width - padding),
-      y: Math.max(headerHeight + padding, Math.min(yCentered, window.innerHeight - width - musicPlayerHeight - padding)),
+      x: window.innerWidth - width - padding,
+      y: window.innerHeight - musicPlayerHeight - width - padding,
     }
   }
 
@@ -67,7 +68,6 @@ export function NavigationJoystick({
     const width = isCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
     const defaultPos = getDefaultJoystickPosition(isCollapsed, width)
     setPosition(defaultPos)
-    localStorage.setItem('joystick-position', JSON.stringify(defaultPos))
   }, [isCollapsed])
 
   // Tecla "J" para volver el joystick a la posición por defecto (centro-derecha)
@@ -100,100 +100,29 @@ export function NavigationJoystick({
     }
   }, [isCollapsed])
 
-  // Initialize position: default for everyone, or validated saved position only if still visible
+  // Siempre posición fija al cargar/refrescar: esquina inferior derecha (mobile, tablet, web)
   useEffect(() => {
     setIsMounted(true)
-    
-    const updatePosition = () => {
-      const savedPosition = localStorage.getItem('joystick-position')
-      const savedCollapsed = localStorage.getItem('joystick-collapsed')
-      const isMobile = window.innerWidth < 768
-      const padding = isMobile ? 8 : 16
-      const musicPlayerHeight = 80
-      const defaultPos = getDefaultJoystickPosition(savedCollapsed === 'true', savedCollapsed === 'true' ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128))
-      
-      if (savedPosition) {
-        try {
-          const { x, y } = JSON.parse(savedPosition)
-          const savedIsCollapsed = savedCollapsed === 'true'
-          const width = savedIsCollapsed ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
-          const maxX = Math.max(padding, window.innerWidth - width - padding)
-          const maxY = Math.max(padding, window.innerHeight - width - padding - musicPlayerHeight)
-          
-          // Si la posición guardada está fuera de la pantalla visible, usar siempre la por defecto
-          const isOutsideViewport = x < padding || x > maxX || y < padding || y > maxY
-          if (isOutsideViewport) {
-            setPosition(defaultPos)
-            localStorage.setItem('joystick-position', JSON.stringify(defaultPos))
-            if (savedCollapsed === 'true') setIsCollapsed(true)
-            return
-          }
-          
-          let adjustedX = Math.max(padding, Math.min(x, maxX))
-          let adjustedY = Math.max(padding, Math.min(y, maxY))
-          
-          const corners = [
-            { x: padding, y: padding },
-            { x: maxX, y: padding },
-            { x: padding, y: maxY },
-            { x: maxX, y: maxY },
-          ]
-          
-          let nearestCorner = corners[0]
-          let minDistance = Math.sqrt(Math.pow(adjustedX - nearestCorner.x, 2) + Math.pow(adjustedY - nearestCorner.y, 2))
-          
-          for (const corner of corners) {
-            const distance = Math.sqrt(Math.pow(adjustedX - corner.x, 2) + Math.pow(adjustedY - corner.y, 2))
-            if (distance < minDistance) {
-              minDistance = distance
-              nearestCorner = corner
-            }
-          }
-          
-          if (minDistance < 50) {
-            adjustedX = nearestCorner.x
-            adjustedY = nearestCorner.y
-          }
-          
-          setPosition({ x: adjustedX, y: adjustedY })
-        } catch {
-          setPosition(defaultPos)
-        }
-      } else {
-        setPosition(defaultPos)
-      }
-      
-      if (savedCollapsed === 'true') {
-        setIsCollapsed(true)
-      }
-    }
-    
-    updatePosition()
-    
+    const savedCollapsed = typeof window !== 'undefined' ? localStorage.getItem('joystick-collapsed') : null
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+    const defaultPos = getDefaultJoystickPosition(
+      savedCollapsed === 'true',
+      savedCollapsed === 'true' ? (isMobile ? 40 : 48) : (isMobile ? 96 : 128)
+    )
+    setPosition(defaultPos)
+    if (savedCollapsed === 'true') setIsCollapsed(true)
+
     const handleResize = () => {
-      setPosition((currentPos) => {
-        const isMobile = window.innerWidth < 768
-        const width = 48
-        const padding = isMobile ? 8 : 16
-        const maxX = Math.max(padding, window.innerWidth - width - padding)
-        const maxY = Math.max(padding, window.innerHeight - width - padding - 80)
-        return {
-          x: Math.max(padding, Math.min(currentPos.x, maxX)),
-          y: Math.max(padding, Math.min(currentPos.y, maxY))
-        }
-      })
+      const collapsed = localStorage.getItem('joystick-collapsed') === 'true'
+      const mobile = window.innerWidth < 768
+      const w = collapsed ? (mobile ? 40 : 48) : (mobile ? 96 : 128)
+      setPosition(getDefaultJoystickPosition(collapsed, w))
     }
-    
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Save position to localStorage
-  useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('joystick-position', JSON.stringify(position))
-    }
-  }, [position, isMounted])
+  // No guardamos posición en localStorage: al refrescar siempre aparece en la esquina fija
 
   // Adjust position when collapsing/expanding to maintain corner position
   useEffect(() => {
